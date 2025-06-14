@@ -1,4 +1,12 @@
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
 
 export default function Home() {
   return (
@@ -17,5 +25,5 @@ export default function Home() {
         </CardFooter>
       </Card>
     </div>
-  );
+  )
 }
