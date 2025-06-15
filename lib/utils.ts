@@ -53,3 +53,24 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
     )
   }
 }
+
+export const formattedDateTime = () => {
+  function getPartOfDay(hour: number) {
+    if (hour >= 5 && hour < 12) return "Morning"
+    else if (hour >= 12 && hour < 17) return "Afternoon"
+    else if (hour >= 17 && hour < 21) return "Evening"
+    else return "Night"
+  }
+
+  const now = new Date()
+  const dayOfWeek = new Intl.DateTimeFormat("en-US", {
+    weekday: "long"
+  }).format(now)
+  const date = new Intl.DateTimeFormat("en-US", {
+    month: "numeric",
+    day: "numeric"
+  }).format(now)
+  const partOfDay = getPartOfDay(now.getHours())
+
+  return `${dayOfWeek} (${date}) ${partOfDay}` // Example output: Sunday (4/19) Evening
+}
