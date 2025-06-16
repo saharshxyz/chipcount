@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Card,
   CardContent,
@@ -10,11 +12,34 @@ import { PayoutStats } from "@/components/payout-stats"
 import { Separator } from "@/components/ui/separator"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
+import { Eraser, Link as LinkIcon } from "lucide-react"
+import Link from "next/link"
+import { toast } from "sonner"
 
 export default function Home() {
+  const copyUrlToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href).then(
+      () => toast.success("Link copied to clipboard"),
+      () => toast.error("Failed to copy URL to clipboard.")
+    )
+  }
+
   return (
     <div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center flex-col w-full">
+        <div className="mb-2 flex space-x-2 flex-row justify-center">
+          <Link href={`/`}>
+            <Button variant="outline">
+              <Eraser className="mr-1" />
+              Clear Form
+            </Button>
+          </Link>
+          <Button onClick={copyUrlToClipboard} className="w-full">
+            <LinkIcon className="mr-1" />
+            Copy Link
+          </Button>
+        </div>
         <Card className="w-full max-w-prose">
           <CardHeader>
             <CardTitle>PokerCalc</CardTitle>

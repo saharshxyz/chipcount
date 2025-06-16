@@ -11,7 +11,10 @@ export function NegativeChart({ players }: { players: PlayerSchema[] }) {
   } satisfies ChartConfig
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[300px] w-full h-max">
+    <ChartContainer
+      config={chartConfig}
+      className="min-h-[300px] w-full h-full max-h-[500px]"
+    >
       <BarChart accessibilityLayer data={players}>
         <CartesianGrid vertical={false} />
         <Bar dataKey="net">
@@ -25,7 +28,13 @@ export function NegativeChart({ players }: { players: PlayerSchema[] }) {
           {players.map((item) => (
             <Cell
               key={item.name}
-              fill={item.net > 0 ? "var(--success)" : "var(--destructive)"}
+              fill={
+                item.net > 1e-9
+                  ? "var(--success)"
+                  : item.net < -1e-9
+                    ? "var(--destructive)"
+                    : "var(--muted-foreground)"
+              }
             />
           ))}
         </Bar>
