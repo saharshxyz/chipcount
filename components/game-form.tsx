@@ -17,9 +17,14 @@ import { gameSchema, GameSchema } from "@/lib/schemas"
 import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
+import { useEffect } from "react"
 
 export function GameForm() {
-  const [game, setGame] = useQueryState("game", parseZipson)
+  const [game, setGame] = useQueryState("game", {
+    ...parseZipson,
+    history: "replace",
+    throttleMs: 2000
+  })
 
   const form = useForm<GameSchema>({
     resolver: zodResolver(gameSchema),
@@ -37,10 +42,20 @@ export function GameForm() {
     name: "players"
   })
 
-  const onSubmit = (values: GameSchema) => {
-    setGame(values)
-    console.log("Form is valid, submitting:", values)
-  }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      gameSchema
+        .safeParseAsync(value)
+        .then((result) => {
+          if (result.success) setGame(result.data)
+        })
+        .catch((err) => console.error("Async validation error:", err))
+    })
+
+    return () => subscription.unsubscribe()
+  }, [form.watch, setGame])
+
+  const onSubmit = (values: GameSchema) => setGame(values)
 
   return (
     <Form {...form}>
@@ -81,7 +96,14 @@ export function GameForm() {
                 render={({ field }) => (
                   <FormItem className="w-24">
                     <FormControl>
-                      <Input type="number" placeholder="In" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="In"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(e.target.valueAsNumber || 0)
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -93,7 +115,14 @@ export function GameForm() {
                 render={({ field }) => (
                   <FormItem className="w-24">
                     <FormControl>
-                      <Input type="number" placeholder="Out" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Out"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(e.target.valueAsNumber || 0)
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
