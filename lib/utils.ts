@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { GameSchema, PayoutSchema, PaySchema } from "./schemas"
 
+import { stringify, parse } from "zipson"
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -73,4 +75,34 @@ export const formattedDateTime = () => {
   const partOfDay = getPartOfDay(now.getHours())
 
   return `${dayOfWeek} (${date}) ${partOfDay}` // Example output: Sunday (4/19) Evening
+}
+
+export const parseZipson = {
+  parse: (queryValue: string) => {
+    function decodeFromBinary(str: string): string {
+      return decodeURIComponent(
+        Array.prototype.map
+          .call(atob(str), function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+          })
+          .join("")
+      )
+    }
+
+    return parse(decodeFromBinary(queryValue))
+  },
+  serialize: (value: GameSchema) => {
+    function encodeToBinary(str: string): string {
+      return btoa(
+        encodeURIComponent(str).replace(
+          /%([0-9A-F]{2})/g,
+          function (match, p1) {
+            return String.fromCharCode(parseInt(p1, 16))
+          }
+        )
+      )
+    }
+
+    return encodeToBinary(stringify(value))
+  }
 }

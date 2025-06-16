@@ -15,13 +15,17 @@ import {
 import { Input } from "@/components/ui/input"
 import { gameSchema, GameSchema } from "@/lib/schemas"
 import { formattedDateTime } from "@/lib/utils"
+import { useQueryState } from "nuqs"
+import { parseZipson } from "@/lib/utils"
 
 export function GameForm() {
+  const [game, setGame] = useQueryState("game", parseZipson)
+
   const form = useForm<GameSchema>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
-      description: `${formattedDateTime()} Game`,
-      players: [
+      description: game?.description || `${formattedDateTime()} Game`,
+      players: game?.players || [
         { name: "", cashIn: 0, cashOut: 0 },
         { name: "", cashIn: 0, cashOut: 0 }
       ]
@@ -33,8 +37,10 @@ export function GameForm() {
     name: "players"
   })
 
-  const onSubmit = (values: GameSchema) =>
+  const onSubmit = (values: GameSchema) => {
+    setGame(values)
     console.log("Form is valid, submitting:", values)
+  }
 
   return (
     <Form {...form}>
