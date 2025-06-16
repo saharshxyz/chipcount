@@ -143,3 +143,8 @@
   }
 
 }
+
+a {
+  @apply underline underline-offset-3 duration-200 ease-in-out hover:underline-offset-1 text-muted-foreground;
+  ;
+}

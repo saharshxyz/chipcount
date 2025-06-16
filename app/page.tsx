@@ -59,12 +59,21 @@ export default function Home() {
         <Separator className="max-w-prose my-5" />
       </div>
 
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center flex-col">
         <div className="w-full max-w-[97.5ch] ">
           <Suspense fallback={<Skeleton className="rounded-l h-[300px]" />}>
             <PayoutStats />
           </Suspense>
         </div>
+        <p className="mt-5"><a
+          href="https://github.com/saharshxyz/pokercalc"
+          target="_blank"
+          rel="noopener"
+        >Open Source</a> by <a
+          href="https://saharsh.xyz"
+          target="_blank"
+          rel="noopener"
+        >@saharshxyz</a></p>
       </div>
     </div>
   )
