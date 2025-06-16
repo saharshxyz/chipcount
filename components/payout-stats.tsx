@@ -22,7 +22,7 @@ export function PayoutStats() {
         {Math.abs(payout.slippage) > 1e-9 && <SlippageInfo payout={payout} />}
 
         <div className="grid md:grid-cols-2 gap-5">
-          {payout.players.map((player) => (
+          {payout.players.sort((a, b) => a.name < b.name ? -1 : 1).map((player) => (
             <PlayerSummary
               key={player.name}
               player={player}

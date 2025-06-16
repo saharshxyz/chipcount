@@ -23,9 +23,9 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<Skeleton className="rounded-l h-svh" />} >
+            <Suspense fallback={<Skeleton className="rounded-l h-[150px]" />}>
               <GameForm />
-            </Suspense >
+            </Suspense>
           </CardContent>
         </Card>
       </div>
@@ -36,7 +36,7 @@ export default function Home() {
 
       <div className="flex items-center justify-center">
         <div className="w-full max-w-[97.5ch] ">
-          <Suspense fallback={<Skeleton className="rounded-l h-svh" />} >
+          <Suspense fallback={<Skeleton className="rounded-l h-[300px]" />}>
             <PayoutStats />
           </Suspense>
         </div>

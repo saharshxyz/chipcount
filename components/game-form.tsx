@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
+import { useFieldArray, useForm, Control } from "react-hook-form"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +18,59 @@ import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
 import { useEffect } from "react"
+
+const PlayerField = ({
+  control,
+  name,
+  placeholder,
+  className
+}: {
+  control: Control<GameSchema>
+  name: `players.${number}.name`
+  placeholder: string
+  className?: string
+}) => (
+  <FormField
+    control={control}
+    name={name}
+    render={({ field }) => (
+      <FormItem className={className}>
+        <FormControl>
+          <Input placeholder={placeholder} {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)
+
+const NumericPlayerField = ({
+  control,
+  name,
+  placeholder
+}: {
+  control: Control<GameSchema>
+  name: `players.${number}.cashIn` | `players.${number}.cashOut`
+  placeholder: string
+}) => (
+  <FormField
+    control={control}
+    name={name}
+    render={({ field }) => (
+      <FormItem className="w-32 sm:w-24">
+        <FormControl>
+          <Input
+            type="number"
+            placeholder={placeholder}
+            {...field}
+            onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)
 
 export function GameForm() {
   const [game, setGame] = useQueryState("game", {
@@ -44,22 +97,17 @@ export function GameForm() {
 
   useEffect(() => {
     const subscription = form.watch((value) => {
-      gameSchema
-        .safeParseAsync(value)
-        .then((result) => {
-          if (result.success) setGame(result.data)
-        })
-        .catch((err) => console.error("Async validation error:", err))
+      setGame(value)
     })
-
     return () => subscription.unsubscribe()
   }, [form, setGame])
 
-  const onSubmit = (values: GameSchema) => setGame(values)
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+      <form
+        onSubmit={form.handleSubmit((values) => setGame(values))}
+        className="space-y-5"
+      >
         <FormField
           control={form.control}
           name="description"
@@ -78,55 +126,21 @@ export function GameForm() {
           <FormLabel className="grow">Players</FormLabel>
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start space-x-2">
-              <FormField
+              <PlayerField
                 control={form.control}
                 name={`players.${index}.name`}
-                render={({ field }) => (
-                  <FormItem className="grow">
-                    <FormControl>
-                      <Input placeholder={`Player ${index + 1}`} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder={`Player ${index + 1}`}
+                className="grow"
               />
-              <FormField
+              <NumericPlayerField
                 control={form.control}
                 name={`players.${index}.cashIn`}
-                render={({ field }) => (
-                  <FormItem className="w-36 sm:w-32">
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="In"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.valueAsNumber || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder="In"
               />
-              <FormField
+              <NumericPlayerField
                 control={form.control}
                 name={`players.${index}.cashOut`}
-                render={({ field }) => (
-                  <FormItem className="w-36 sm:w-32">
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Out"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.valueAsNumber || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                placeholder="Out"
               />
               <Button
                 type="button"

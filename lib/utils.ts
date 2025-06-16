@@ -78,7 +78,7 @@ export const formattedDateTime = () => {
 }
 
 export const parseZipson = {
-  parse: (queryValue: string): GameSchema => {
+  parse: (queryValue: string) => {
     function decodeFromBinary(str: string): string {
       return decodeURIComponent(
         Array.prototype.map
@@ -91,7 +91,7 @@ export const parseZipson = {
 
     return parse(decodeFromBinary(queryValue))
   },
-  serialize: (value: GameSchema) => {
+  serialize: (value: any) => {
     function encodeToBinary(str: string): string {
       return btoa(
         encodeURIComponent(str).replace(

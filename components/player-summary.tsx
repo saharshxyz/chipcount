@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TrendingDown, TrendingUp } from "lucide-react"
-import { NumberValue } from "./number-val"
+import { DollarValue } from "./dollar-val"
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="bg-secondary flex items-center justify-center flex-col py-1.5 w-full rounded-sm transition-all">
     <p>{label}</p>
     <p className="font-bold">
-      <NumberValue value={value} />
+      <DollarValue value={value} />
     </p>
   </div>
 )
@@ -49,7 +49,7 @@ export function PlayerSummary({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">{player.name}</CardTitle>
+        <CardTitle>{player.name}</CardTitle>
         <CardDescription className="flex flex-row items-center justify-center gap-2 transition-all">
           <Stat label="Cash In" value={player.cashIn} />
           <Stat label="Cash Out" value={player.cashOut} />
@@ -58,11 +58,10 @@ export function PlayerSummary({
           )}
         </CardDescription>
         <CardAction
-          className={`text-2xl font-semibold ${
-            player.net > 1e-9 ? "text-success" : "text-destructive"
-          }`}
+          className={`text-2xl font-semibold ${player.net > 1e-9 ? "text-success" : player.net < -1e-9 ? "text-destructive" : ""
+            }`}
         >
-          <NumberValue value={player.net} />
+          <DollarValue value={player.net} />
         </CardAction>
       </CardHeader>
       {nonEmptyTransactions.length > 0 && (
@@ -76,7 +75,7 @@ export function PlayerSummary({
                   {type.data.map((to) => (
                     <li key={to.target}>
                       <span className="font-bold">
-                        <NumberValue value={to.value} />
+                        <DollarValue value={to.value} />
                       </span>{" "}
                       {type.preposition} {to.target}
                     </li>

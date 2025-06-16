@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { DollarSign } from "lucide-react"
-import { NumberValue } from "./number-val"
+import { Info } from "lucide-react"
+import { DollarValue } from "./dollar-val"
 
 export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
   const totalCashIn = payout.players.reduce((sum, p) => sum + p.cashIn, 0)
@@ -15,14 +15,14 @@ export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
 
   return (
     <div className="flex items-center justify-center">
-      <Card className="border-orange-200 bg-orange-50 max-w-prose w-full">
+      <Card className="border-orange-200 bg-orange-50 max-w-[50ch] w-full">
         <CardHeader>
           <CardTitle className="text-orange-800 flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
+            <Info className="h-5 w-5" />
             Slippage Detected
           </CardTitle>
           <CardDescription className="text-orange-700">
-            There&apos;s a <NumberValue value={Math.abs(payout.slippage)} />{" "}
+            There&apos;s a <DollarValue value={Math.abs(payout.slippage)} />{" "}
             {payout.slippage > 0 ? "surplus" : "shortage"} in the game. This has
             been{" "}
             {payout.slippage > 0
@@ -33,17 +33,16 @@ export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-orange-800">
-            <div className="font-medium mb-2">Slippage Details:</div>
             <div className="space-y-1">
-              <div>
-                Total Cash In: <NumberValue value={totalCashIn} />
-              </div>
-              <div>
-                Total Cash Out: <NumberValue value={totalCashOut} />
-              </div>
+              <p>
+                Total Cash In: <DollarValue value={totalCashIn} />
+              </p>
+              <p>
+                Total Cash Out: <DollarValue value={totalCashOut} />
+              </p>
               <div className="font-medium">
-                Difference: <NumberValue value={Math.abs(payout.slippage)} /> (
-                <NumberValue
+                Difference: <DollarValue value={Math.abs(payout.slippage)} /> (
+                <DollarValue
                   value={Math.abs(payout.slippage) / payout.players.length}
                 />{" "}
                 per player)
