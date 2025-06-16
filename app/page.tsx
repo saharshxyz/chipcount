@@ -6,11 +6,12 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { GameForm } from "@/components/game-form"
-import { GameStats } from "@/components/game-stats"
+import { PayoutStats } from "@/components/payout-stats"
+import { Separator } from "@/components/ui/separator"
 
 export default function Home() {
   return (
-    <div>
+    <div >
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-prose">
           <CardHeader>
@@ -26,8 +27,12 @@ export default function Home() {
       </div>
 
       <div className="flex items-center justify-center">
-        <div className="w-full max-w-prose ">
-          <GameStats />
+        <Separator className="max-w-prose my-5" />
+      </div>
+
+      <div className="flex items-center justify-center">
+        <div className="w-full max-w-[97.5ch] ">
+          <PayoutStats />
         </div>
       </div>
     </div>

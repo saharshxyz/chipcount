@@ -9,60 +9,84 @@ import {
 } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TrendingDown, TrendingUp } from "lucide-react"
+import { NumberValue } from "./number-val"
 
-export function PlayerSummary(player: PlayerSchema) {
+const Stat = ({ label, value }: { label: string; value: number }) => (
+  <div className="bg-secondary flex items-center justify-center flex-col py-1.5 w-full rounded-sm transition-all">
+    <p>{label}</p>
+    <p className="font-bold">
+      <NumberValue value={value} />
+    </p>
+  </div>
+)
+
+export function PlayerSummary({
+  player,
+  slippage
+}: {
+  player: PlayerSchema
+  slippage: number
+}) {
+  const transactionTypes = [
+    {
+      data: player.paidBy,
+      variant: "destructive",
+      icon: <TrendingDown />,
+      title: "Owes",
+      preposition: "to"
+    },
+    {
+      data: player.paidTo,
+      variant: "success",
+      icon: <TrendingUp />,
+      title: "Receives",
+      preposition: "from"
+    }
+  ] as const
+
+  const nonEmptyTransactions = transactionTypes.filter((t) => t.data.length > 0)
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-xl">{player.name}</CardTitle>
-        <CardDescription className="flex flex-row items-center justify-center gap-2">
-          {
-            [["In", player.cashIn], ["Out", player.cashOut]].map(cash => (
-              <div className="bg-secondary flex items-center justify-center flex-col py-1.5 w-full rounded-sm" key={cash[0]}>
-                <p>Cash {cash[0]}</p>
-                <p className="font-bold">{cash[1]}</p>
-              </div>
-            ))
-          }
+        <CardDescription className="flex flex-row items-center justify-center gap-2 transition-all">
+          <Stat label="Cash In" value={player.cashIn} />
+          <Stat label="Cash Out" value={player.cashOut} />
+          {Math.abs(slippage) > 1e-9 && (
+            <Stat label="Slippage" value={slippage} />
+          )}
         </CardDescription>
-        <CardAction className="text-2xl">{player.net}</CardAction>
+        <CardAction
+          className={`text-2xl font-semibold ${
+            player.net > 1e-9 ? "text-success" : "text-destructive"
+          }`}
+        >
+          <NumberValue value={player.net} />
+        </CardAction>
       </CardHeader>
-      <CardContent>
-        {
-          player.paidBy.length != 0 && (
-            <Alert variant="destructive">
-              <TrendingDown />
-              <AlertTitle>Owes</AlertTitle>
+      {nonEmptyTransactions.length > 0 && (
+        <CardContent className="space-y-2">
+          {nonEmptyTransactions.map((type) => (
+            <Alert variant={type.variant} key={type.title}>
+              {type.icon}
+              <AlertTitle>{type.title}</AlertTitle>
               <AlertDescription>
                 <ul>
-                  {
-                    player.paidBy.map(to => (
-                      <li key={to.target}><span className="font-bold">{to.value}</span> to {to.target}</li>
-                    ))
-                  }
+                  {type.data.map((to) => (
+                    <li key={to.target}>
+                      <span className="font-bold">
+                        <NumberValue value={to.value} />
+                      </span>{" "}
+                      {type.preposition} {to.target}
+                    </li>
+                  ))}
                 </ul>
               </AlertDescription>
             </Alert>
-          )
-        }
-        {
-          player.paidTo.length != 0 && (
-            <Alert variant="success">
-              <TrendingDown />
-              <AlertTitle>Receives</AlertTitle>
-              <AlertDescription>
-                <ul>
-                  {
-                    player.paidTo.map(to => (
-                      <li key={to.target}><span className="font-bold">{to.value}</span> from {to.target}</li>
-                    ))
-                  }
-                </ul>
-              </AlertDescription>
-            </Alert>
-          )
-        }
-      </CardContent>
+          ))}
+        </CardContent>
+      )}
     </Card>
   )
 }

@@ -20,11 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <div className="mt-5 mb-1">
-          {" "}
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </div>
+      <body className={`${inter.className} antialiased py-5`}>
+        <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>
   )

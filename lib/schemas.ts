@@ -53,6 +53,10 @@ export type GameSchema = z.infer<typeof gameSchema>
 
 export const payoutSchema = z.object({
   players: uniqueNameArraySchema(playerSchema),
-  slippage: z.number().describe("Extra or uncounted for chips. To be distributed equally by all players.")
+  slippage: z
+    .number()
+    .describe(
+      "Extra or uncounted for chips. To be distributed equally by all players."
+    )
 })
 export type PayoutSchema = z.infer<typeof payoutSchema>
