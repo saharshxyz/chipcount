@@ -60,6 +60,7 @@ export function GameForm() {
         />
 
         <div className="space-y-2">
+          <FormLabel>Players</FormLabel>
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start space-x-2">
               <FormField

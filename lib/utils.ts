@@ -78,7 +78,7 @@ export const formattedDateTime = () => {
 }
 
 export const parseZipson = {
-  parse: (queryValue: string) => {
+  parse: (queryValue: string): GameSchema => {
     function decodeFromBinary(str: string): string {
       return decodeURIComponent(
         Array.prototype.map

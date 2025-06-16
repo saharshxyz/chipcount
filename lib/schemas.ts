@@ -26,8 +26,16 @@ const playerSchema = z.object({
   cashIn: dollarSchema,
   cashOut: dollarSchema,
   net: z.number(),
-  paidBy: z.array(paySchema),
-  paidTo: z.array(paySchema)
+  paidBy: z
+    .array(paySchema)
+    .describe(
+      "Payments this player made to others. 'target' is who they paid."
+    ),
+  paidTo: z
+    .array(paySchema)
+    .describe(
+      "Payments this player received from others. 'target' is who paid them."
+    )
 })
 export type PlayerSchema = z.infer<typeof playerSchema>
 
@@ -45,6 +53,6 @@ export type GameSchema = z.infer<typeof gameSchema>
 
 export const payoutSchema = z.object({
   players: uniqueNameArraySchema(playerSchema),
-  slippage: z.number()
+  slippage: z.number().describe("Extra or uncounted for chips. To be distributed equally by all players.")
 })
 export type PayoutSchema = z.infer<typeof payoutSchema>
