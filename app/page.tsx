@@ -29,13 +29,13 @@ export default function Home() {
     <div>
       <div className="flex items-center justify-center flex-col w-full">
         <div className="mb-2 flex space-x-2 flex-row justify-center">
-          <Link href={`/`}>
+          <Link href={`/`} onClick={() => window.location.reload()}>
             <Button variant="outline">
               <Eraser className="mr-1" />
               Clear Form
             </Button>
           </Link>
-          <Button onClick={copyUrlToClipboard} className="w-full">
+          <Button onClick={copyUrlToClipboard} className="max-w-full">
             <LinkIcon className="mr-1" />
             Copy Link
           </Button>

@@ -50,7 +50,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-6/5 h-[300px]"
+      className="mx-auto aspect-6/5 h-[275px] m-auto"
     >
       <PieChart>
         <ChartTooltip
@@ -75,18 +75,17 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
           data={playersData}
           dataKey="cashOut"
           nameKey="name"
-          outerRadius={120}
-          innerRadius={100}
+          outerRadius={110}
+          innerRadius={95}
           strokeWidth={1}
           paddingAngle={5}
         >
           <LabelList
             dataKey="name"
             position="outside"
-            offset={10}
+            offset={8}
             className="fill-foreground"
             stroke="none"
-            fontSize={12}
           />
         </Pie>
 
@@ -94,7 +93,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
           data={playersData}
           dataKey="cashIn"
           nameKey="name"
-          outerRadius={90}
+          outerRadius={85}
           innerRadius={totalPot < 100 ? 50 : totalPot < 1000 ? 60 : 63.5}
           paddingAngle={5}
         >
