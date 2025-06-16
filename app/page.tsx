@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import { GameForm } from "@/components/game-form"
 
 export default function Home() {
   return (
@@ -16,7 +17,9 @@ export default function Home() {
             Enter player details to calculate payouts.
           </CardDescription>
         </CardHeader>
-        <CardContent></CardContent>
+        <CardContent>
+          <GameForm />
+        </CardContent>
       </Card>
     </div>
   )

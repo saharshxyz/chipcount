@@ -10,7 +10,7 @@ const uniqueNameArraySchema = <T extends { name: string }>(
     .array(schema)
     .min(2, "At least players are required")
     .refine((arr) => uniqueArray(arr.map((item) => item.name)), {
-      message: "Names must be unique"
+      message: "Player names must be unique"
     })
 
 const nameSchema = z.string().min(1)
