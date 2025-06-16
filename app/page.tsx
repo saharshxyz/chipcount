@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator"
 
 export default function Home() {
   return (
-    <div >
+    <div>
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-prose">
           <CardHeader>

@@ -53,7 +53,7 @@ export function GameForm() {
     })
 
     return () => subscription.unsubscribe()
-  }, [form.watch, setGame])
+  }, [form, setGame])
 
   const onSubmit = (values: GameSchema) => setGame(values)
 
