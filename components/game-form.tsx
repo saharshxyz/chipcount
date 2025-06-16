@@ -13,7 +13,7 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { gameSchema, GameSchema } from "@/lib/schemas"
+import { gameSchema, GameSchema, PlayerSchema } from "@/lib/schemas"
 import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
@@ -75,7 +75,7 @@ export function GameForm() {
         />
 
         <div className="space-y-2">
-          <FormLabel>Players</FormLabel>
+          <FormLabel className="grow">Players</FormLabel>
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start space-x-2">
               <FormField
@@ -94,7 +94,7 @@ export function GameForm() {
                 control={form.control}
                 name={`players.${index}.cashIn`}
                 render={({ field }) => (
-                  <FormItem className="w-24">
+                  <FormItem className="w-36 sm:w-32">
                     <FormControl>
                       <Input
                         type="number"
@@ -113,7 +113,7 @@ export function GameForm() {
                 control={form.control}
                 name={`players.${index}.cashOut`}
                 render={({ field }) => (
-                  <FormItem className="w-24">
+                  <FormItem className="w-36 sm:w-32">
                     <FormControl>
                       <Input
                         type="number"
@@ -147,7 +147,7 @@ export function GameForm() {
           <Button
             type="button"
             variant="outline"
-            onClick={() => append({ name: "", cashIn: 0, cashOut: 0 })}
+            onClick={() => append({} as PlayerSchema)}
             className="w-full"
           >
             Add Player

@@ -8,6 +8,8 @@ import {
 import { GameForm } from "@/components/game-form"
 import { PayoutStats } from "@/components/payout-stats"
 import { Separator } from "@/components/ui/separator"
+import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Home() {
   return (
@@ -21,7 +23,9 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <GameForm />
+            <Suspense fallback={<Skeleton className="rounded-l h-svh" />} >
+              <GameForm />
+            </Suspense >
           </CardContent>
         </Card>
       </div>
@@ -32,7 +36,9 @@ export default function Home() {
 
       <div className="flex items-center justify-center">
         <div className="w-full max-w-[97.5ch] ">
-          <PayoutStats />
+          <Suspense fallback={<Skeleton className="rounded-l h-svh" />} >
+            <PayoutStats />
+          </Suspense>
         </div>
       </div>
     </div>
