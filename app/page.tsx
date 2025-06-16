@@ -67,10 +67,12 @@ export default function Home() {
         </div>
         <p className="mt-5"><a
           href="https://github.com/saharshxyz/pokercalc"
+          className="text-link"
           target="_blank"
           rel="noopener"
         >Open Source</a> by <a
           href="https://saharsh.xyz"
+          className="text-link"
           target="_blank"
           rel="noopener"
         >@saharshxyz</a></p>
