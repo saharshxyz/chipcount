@@ -77,6 +77,16 @@ export const formattedDateTime = () => {
   return `${dayOfWeek} (${date}) ${partOfDay}` // Example output: Sunday (4/19) Evening
 }
 
+export const formatDollar = (value: number) => {
+  const dollarFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    trailingZeroDisplay: "stripIfInteger"
+  })
+
+  return dollarFormatter.format(value)
+}
+
 export const parseZipson = {
   parse: (queryValue: string) => {
     function decodeFromBinary(str: string): string {

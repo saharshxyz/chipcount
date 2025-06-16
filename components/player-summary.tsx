@@ -9,14 +9,12 @@ import {
 } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TrendingDown, TrendingUp } from "lucide-react"
-import { DollarValue } from "./dollar-val"
+import { formatDollar } from "@/lib/utils"
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
   <div className="bg-secondary flex items-center justify-center flex-col py-1.5 w-full rounded-sm transition-all">
     <p>{label}</p>
-    <p className="font-bold">
-      <DollarValue value={value} />
-    </p>
+    <p className="font-bold">{formatDollar(value)}</p>
   </div>
 )
 
@@ -58,10 +56,15 @@ export function PlayerSummary({
           )}
         </CardDescription>
         <CardAction
-          className={`text-2xl font-semibold ${player.net > 1e-9 ? "text-success" : player.net < -1e-9 ? "text-destructive" : ""
-            }`}
+          className={`text-2xl font-semibold ${
+            player.net > 1e-9
+              ? "text-success"
+              : player.net < -1e-9
+                ? "text-destructive"
+                : ""
+          }`}
         >
-          <DollarValue value={player.net} />
+          {formatDollar(player.net)}
         </CardAction>
       </CardHeader>
       {nonEmptyTransactions.length > 0 && (
@@ -75,7 +78,7 @@ export function PlayerSummary({
                   {type.data.map((to) => (
                     <li key={to.target}>
                       <span className="font-bold">
-                        <DollarValue value={to.value} />
+                        {formatDollar(to.value)}
                       </span>{" "}
                       {type.preposition} {to.target}
                     </li>

@@ -7,7 +7,7 @@ import {
   CardTitle
 } from "@/components/ui/card"
 import { Info } from "lucide-react"
-import { DollarValue } from "./dollar-val"
+import { formatDollar } from "@/lib/utils"
 
 export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
   const totalCashIn = payout.players.reduce((sum, p) => sum + p.cashIn, 0)
@@ -22,7 +22,7 @@ export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
             Slippage Detected
           </CardTitle>
           <CardDescription className="text-orange-700">
-            There&apos;s a <DollarValue value={Math.abs(payout.slippage)} />{" "}
+            There&apos;s a {formatDollar(Math.abs(payout.slippage))}{" "}
             {payout.slippage > 0 ? "surplus" : "shortage"} in the game. This has
             been{" "}
             {payout.slippage > 0
@@ -34,17 +34,13 @@ export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
         <CardContent>
           <div className="text-sm text-orange-800">
             <div className="space-y-1">
-              <p>
-                Total Cash In: <DollarValue value={totalCashIn} />
-              </p>
-              <p>
-                Total Cash Out: <DollarValue value={totalCashOut} />
-              </p>
+              <p>Total Cash In: {formatDollar(totalCashIn)}</p>
+              <p>Total Cash Out: {formatDollar(totalCashOut)}</p>
               <div className="font-medium">
-                Difference: <DollarValue value={Math.abs(payout.slippage)} /> (
-                <DollarValue
-                  value={Math.abs(payout.slippage) / payout.players.length}
-                />{" "}
+                Difference: {formatDollar(Math.abs(payout.slippage))} (
+                {formatDollar(
+                  Math.abs(payout.slippage) / payout.players.length
+                )}{" "}
                 per player)
               </div>
             </div>
