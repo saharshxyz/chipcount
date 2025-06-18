@@ -101,8 +101,7 @@ export const parseZipson = {
 
     return parse(decodeFromBinary(queryValue))
   },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  serialize: (value: any) => {
+  serialize: (value: unknown) => {
     function encodeToBinary(str: string): string {
       return btoa(
         encodeURIComponent(str).replace(
