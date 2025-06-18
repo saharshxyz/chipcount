@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useFieldArray, useForm, Control } from "react-hook-form"
-import { X } from "lucide-react"
+import { X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -18,6 +18,8 @@ import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
 import { useEffect } from "react"
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const PlayerField = ({
   control,
@@ -76,7 +78,7 @@ export function GameForm() {
   const [game, setGame] = useQueryState("game", {
     ...parseZipson,
     history: "replace",
-    throttleMs: 2000
+    throttleMs: 5000
   })
 
   const form = useForm<GameSchema>({
@@ -102,12 +104,14 @@ export function GameForm() {
     return () => subscription.unsubscribe()
   }, [form, setGame])
 
+  async function onSubmit(values: GameSchema) {
+    await sleep(500)
+    setGame(values)
+  }
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((values) => setGame(values))}
-        className="space-y-5"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <FormField
           control={form.control}
           name="description"
@@ -167,7 +171,14 @@ export function GameForm() {
             Add Player
           </Button>
         </div>
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
           Submit
         </Button>
       </form>
