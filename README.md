@@ -11,8 +11,6 @@ ChipCount is a web-based tool that makes it easy to settle up after a poker game
 -   **💸 Clear Payouts**: Get a clear, simple breakdown of exactly who needs to pay whom to settle up.
 -   **🔗 Sharable State**: Share game results and state effortlessly with a single, shareable link.
 -   **📊 Visual Breakdown**: Visualize winners and losers with interactive donut and bar charts.
--   **💅 Modern UI**: Enjoy a clean, responsive, and modern user interface.
-
 ## How It Works
 
 -   **Client-Side & Stateless**: The application operates entirely in your browser. All game data is serialized, compressed, and stored in the URL, ensuring privacy and easy sharing without needing a backend server.
