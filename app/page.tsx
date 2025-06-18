@@ -42,7 +42,7 @@ export default function Home() {
         </div>
         <Card className="w-full max-w-prose">
           <CardHeader>
-            <CardTitle>PokerCalc</CardTitle>
+            <CardTitle>ChipCount</CardTitle>
             <CardDescription>
               Enter player details to calculate payouts.
             </CardDescription>

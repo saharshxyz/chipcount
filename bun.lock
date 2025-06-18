@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "pokercalc",
+      "name": "ChipCount",
       "dependencies": {
         "@hookform/resolvers": "^5.1.1",
         "@radix-ui/react-label": "^2.1.7",

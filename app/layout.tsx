@@ -10,7 +10,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "PokerCalc",
+  title: "ChipCount",
   description: "Calculate Poker Payouts"
 }
 
