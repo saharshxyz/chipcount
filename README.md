@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ChipCount
+
+> A simple, client-side poker payout calculator with shareable results.
+
+ChipCount is a web-based tool that makes it easy to settle up after a poker game. Enter each player's cash-in and cash-out amounts, and the app instantly calculates who owes whom. All calculations are performed in your browser, and the entire game state is stored in the URL, ensuring your data remains private and is easy to share.
+
+## Key Features
+
+-   **🧮 Instant Calculations**: Automatically calculate net winnings and losses for each player.
+-   **⚖️ Slippage Handling**: Automatically handles pot discrepancies by distributing any surplus or shortage equally among all players.
+-   **💸 Clear Payouts**: Get a clear, simple breakdown of exactly who needs to pay whom to settle up.
+-   **🔗 Sharable State**: Share game results and state effortlessly with a single, shareable link.
+-   **📊 Visual Breakdown**: Visualize winners and losers with interactive donut and bar charts.
+-   **💅 Modern UI**: Enjoy a clean, responsive, and modern user interface.
+
+## How It Works
+
+-   **Client-Side & Stateless**: The application operates entirely in your browser. All game data is serialized, compressed, and stored in the URL, ensuring privacy and easy sharing without needing a backend server.
+-   **Payout Calculation**: To settle debts, the app uses an efficient algorithm:
+    1.  **Slippage Distribution**: It first calculates any discrepancy (surplus or shortage) in the total pot and distributes it equally among all players.
+    2.  **Optimal Payments**: Players are sorted by their net balance. A two-pointer algorithm then matches the biggest losers with the biggest winners to determine the simplest and most direct payment flows, minimizing the number of transactions needed to settle the game.
+
+## Tech Stack
+
+-   **Framework**: Next.js / React
+-   **UI**: shadcn/ui, Tailwind CSS
+-   **State Management**: React Hook Form, `nuqs` (for URL query string state)
+-   **Validation**: Zod
+-   **Charting**: Recharts
 
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+```sh
+git clone https://github.com/saharshxyz/pokercalc.git
+cd pokercalc
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next, open [http://localhost:3000](http://localhost:3000) in your browser.

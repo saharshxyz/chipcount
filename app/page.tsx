@@ -67,7 +67,7 @@ export default function Home() {
         </div>
         <p className="mt-5">
           <a
-            href="https://github.com/saharshxyz/pokercalc"
+            href="https://github.com/saharshxyz/chipcount"
             className="text-link"
             target="_blank"
             rel="noopener"
