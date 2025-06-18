@@ -86,8 +86,8 @@ export function GameForm() {
     defaultValues: {
       description: game?.description || `${formattedDateTime()} Game`,
       players: game?.players || [
-        { name: "", cashIn: 0, cashOut: 0 },
-        { name: "", cashIn: 0, cashOut: 0 }
+        { name: "", cashIn: "", cashOut: "" },
+        { name: "", cashIn: "", cashOut: "" }
       ]
     }
   })
