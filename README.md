@@ -29,8 +29,8 @@ ChipCount is a web-based tool that makes it easy to settle up after a poker game
 ## Getting Started
 
 ```sh
-git clone https://github.com/saharshxyz/pokercalc.git
-cd pokercalc
+git clone https://github.com/saharshxyz/chipcount.git
+cd chipcount
 bun install
 bun dev
 ```

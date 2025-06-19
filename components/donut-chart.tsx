@@ -1,3 +1,5 @@
+"use client"
+
 import { PayoutSchema } from "@/lib/schemas"
 import {
   ChartConfig,
@@ -16,16 +18,15 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   const largestNet = players[0].net
 
   const genColors = (lowerBound: number, upperBound: number) => {
-    const successColors = ["#00B03F", "#009E37"]
-    const destructiveColors = ["#E7000B", "#FF6467"]
-
-    const success = successColors[Math.round(Math.random())]
-    const destructive = destructiveColors[Math.round(Math.random())]
+    const rootStyles = window.getComputedStyle(document.documentElement); // Will error on first load, but will refresh and work
+    const success = rootStyles.getPropertyValue('--color-success').trim();
+    const destructive = rootStyles.getPropertyValue('--color-destructive').trim();
+    const muted = rootStyles.getPropertyValue('--muted-foreground').trim();
 
     return chroma
-      .scale([success, "grey", destructive])
+      .scale([success, muted, destructive])
       .mode("lrgb")
-      .domain([-1, 0, 1])
+      .domain([lowerBound, 0, upperBound])
       .colors(upperBound + Math.abs(lowerBound) + 1)
       .toReversed()
   }
@@ -72,7 +73,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
           }
         />
         <Pie
-          data={playersData}
+          data={playersData.filter(player => player.cashOut !== 0)}
           dataKey="cashOut"
           nameKey="name"
           outerRadius={100}
@@ -90,7 +91,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
         </Pie>
 
         <Pie
-          data={playersData}
+          data={playersData.filter(player => player.cashIn !== 0)}
           dataKey="cashIn"
           nameKey="name"
           outerRadius={80}
