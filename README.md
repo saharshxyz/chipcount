@@ -1,38 +1,38 @@
-# ChipCount
+# sv
 
-> A simple, client-side poker payout calculator with shareable results.
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-ChipCount is a web-based tool that makes it easy to settle up after a poker game. Enter each player's cash-in and cash-out amounts, and the app instantly calculates who owes whom. All calculations are performed in your browser, and the entire game state is stored in the URL, ensuring your data remains private and is easy to share.
+## Creating a project
 
-## Key Features
+If you're seeing this, you've probably already done this step. Congrats!
 
--   **🧮 Instant Calculations**: Automatically calculate net winnings and losses for each player.
--   **⚖️ Slippage Handling**: Automatically handles pot discrepancies by distributing any surplus or shortage equally among all players.
--   **💸 Clear Payouts**: Get a clear, simple breakdown of exactly who needs to pay whom to settle up.
--   **🔗 Sharable State**: Share game results and state effortlessly with a single, shareable link.
--   **📊 Visual Breakdown**: Visualize winners and losers with interactive donut and bar charts.
-## How It Works
+```bash
+# create a new project in the current directory
+npx sv create
 
--   **Client-Side & Stateless**: The application operates entirely in your browser. All game data is serialized, compressed, and stored in the URL, ensuring privacy and easy sharing without needing a backend server.
--   **Payout Calculation**: To settle debts, the app uses an efficient algorithm:
-    1.  **Slippage Distribution**: It first calculates any discrepancy (surplus or shortage) in the total pot and distributes it equally among all players.
-    2.  **Optimal Payments**: Players are sorted by their net balance. A two-pointer algorithm then matches the biggest losers with the biggest winners to determine the simplest and most direct payment flows, minimizing the number of transactions needed to settle the game.
-
-## Tech Stack
-
--   **Framework**: Next.js / React
--   **UI**: shadcn/ui, Tailwind CSS
--   **State Management**: React Hook Form, `nuqs` (for URL query string state)
--   **Validation**: Zod
--   **Charting**: Recharts
-
-## Getting Started
-
-```sh
-git clone https://github.com/saharshxyz/chipcount.git
-cd chipcount
-bun install
-bun dev
+# create a new project in my-app
+npx sv create my-app
 ```
 
-Next, open [http://localhost:3000](http://localhost:3000) in your browser.
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+To create a production version of your app:
+
+```bash
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
