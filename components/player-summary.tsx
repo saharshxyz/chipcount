@@ -12,7 +12,7 @@ import { TrendingDown, TrendingUp } from "lucide-react"
 import { formatDollar } from "@/lib/utils"
 
 const Stat = ({ label, value }: { label: string; value: number }) => (
-  <div className="bg-secondary flex items-center justify-center flex-col py-1.5 w-full rounded-sm transition-all">
+  <div className="bg-secondary flex w-full flex-col items-center justify-center rounded-sm py-1.5 transition-all">
     <p>{label}</p>
     <p className="font-bold">{formatDollar(value)}</p>
   </div>

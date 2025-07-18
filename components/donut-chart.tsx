@@ -18,10 +18,12 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   const largestNet = players[0].net
 
   const genColors = (lowerBound: number, upperBound: number) => {
-    const rootStyles = window.getComputedStyle(document.documentElement); // Will error on first load, but will refresh and work
-    const success = rootStyles.getPropertyValue('--color-success').trim();
-    const destructive = rootStyles.getPropertyValue('--color-destructive').trim();
-    const muted = rootStyles.getPropertyValue('--muted-foreground').trim();
+    const rootStyles = window.getComputedStyle(document.documentElement) // Will error on first load, but will refresh and work
+    const success = rootStyles.getPropertyValue("--color-success").trim()
+    const destructive = rootStyles
+      .getPropertyValue("--color-destructive")
+      .trim()
+    const muted = rootStyles.getPropertyValue("--muted-foreground").trim()
 
     return chroma
       .scale([success, muted, destructive])
@@ -51,7 +53,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-6/5 h-[250px] m-auto"
+      className="m-auto mx-auto aspect-6/5 h-[250px]"
     >
       <PieChart>
         <ChartTooltip
@@ -73,7 +75,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
           }
         />
         <Pie
-          data={playersData.filter(player => player.cashOut !== 0)}
+          data={playersData.filter((player) => player.cashOut !== 0)}
           dataKey="cashOut"
           nameKey="name"
           outerRadius={100}
@@ -91,7 +93,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
         </Pie>
 
         <Pie
-          data={playersData.filter(player => player.cashIn !== 0)}
+          data={playersData.filter((player) => player.cashIn !== 0)}
           dataKey="cashIn"
           nameKey="name"
           outerRadius={80}

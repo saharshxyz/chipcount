@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased p-5`}>
+      <body className={`${inter.className} p-5 antialiased`}>
         <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster richColors expand={false} position="bottom-center" />
       </body>

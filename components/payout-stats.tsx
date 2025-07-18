@@ -30,12 +30,12 @@ export function PayoutStats() {
       {Math.abs(payout.slippage) > 1e-9 && <SlippageInfo payout={payout} />}
 
       <Card className="bg-secondary">
-        <CardContent className="flex flex-col w-full justify-around md:flex-row gap-5">
+        <CardContent className="flex w-full flex-col justify-around gap-5 md:flex-row">
           <DonutCharts payout={payout} />
           <NegativeChart players={payout.players} />
         </CardContent>
       </Card>
-      <div className="grid md:grid-cols-2 gap-5">
+      <div className="grid gap-5 md:grid-cols-2">
         {payout.players.map((player) => (
           <PlayerSummary
             key={player.name}

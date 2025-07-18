@@ -15,9 +15,9 @@ export function SlippageInfo({ payout }: { payout: PayoutSchema }) {
 
   return (
     <div className="flex items-center justify-center">
-      <Card className="border-orange-200 bg-orange-50 max-w-[50ch] w-full">
+      <Card className="w-full max-w-[50ch] border-orange-200 bg-orange-50">
         <CardHeader>
-          <CardTitle className="text-orange-800 flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-orange-800">
             <Info className="h-5 w-5" />
             Slippage Detected
           </CardTitle>

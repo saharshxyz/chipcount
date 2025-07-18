@@ -27,8 +27,8 @@ export default function Home() {
 
   return (
     <div>
-      <div className="flex items-center justify-center flex-col w-full">
-        <div className="mb-2 flex space-x-2 flex-row justify-center">
+      <div className="flex w-full flex-col items-center justify-center">
+        <div className="mb-2 flex flex-row justify-center space-x-2">
           <Link href={`/`} onClick={() => window.location.reload()}>
             <Button variant="outline">
               <Eraser className="mr-1" />
@@ -48,7 +48,7 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<Skeleton className="rounded-l h-[150px]" />}>
+            <Suspense fallback={<Skeleton className="h-[150px] rounded-l" />}>
               <GameForm />
             </Suspense>
           </CardContent>
@@ -56,12 +56,12 @@ export default function Home() {
       </div>
 
       <div className="flex items-center justify-center">
-        <Separator className="max-w-prose my-5" />
+        <Separator className="my-5 max-w-prose" />
       </div>
 
-      <div className="flex items-center justify-center flex-col">
-        <div className="w-full max-w-[97.5ch] ">
-          <Suspense fallback={<Skeleton className="rounded-l h-[300px]" />}>
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-full max-w-[97.5ch]">
+          <Suspense fallback={<Skeleton className="h-[300px] rounded-l" />}>
             <PayoutStats />
           </Suspense>
         </div>
