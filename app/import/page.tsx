@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
-import Papa, { ParseResult } from "papaparse" // Import ParseResult type
+import Papa, { ParseResult } from "papaparse"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { ArrowLeft, Loader2 } from "lucide-react"
@@ -28,7 +28,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { pokerNowSchema } from "@/lib/schemas"
+import { PokerNowSchema, pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
 // --- Schemas for both form types (Unchanged) ---
@@ -62,14 +62,15 @@ const importLedgerSchema = z.object({
 })
 type ImportLedgerSchema = z.infer<typeof importLedgerSchema>
 
-const processParsedData = (result: ParseResult<any>) => {
+const processParsedData = (result: ParseResult<PokerNowSchema>) => {
   if (result.errors.length) {
     const errorMessages = result.errors.map((e) => e.message).join(", ")
     throw new Error(`CSV Parsing Error: ${errorMessages}`)
   }
 
   const validation = pokerNowSchema.safeParse(result.data)
-  if (!validation.success) throw new Error(JSON.stringify(validation.error, null, 2))
+  if (!validation.success)
+    throw new Error(JSON.stringify(validation.error, null, 2))
 
   return convertPokerNow(validation.data)
 }
@@ -86,7 +87,6 @@ export default function ImportPage() {
     resolver: zodResolver(importLedgerSchema),
     defaultValues: { csvData: "" }
   })
-
 
   async function onUrlSubmit(values: ImportUrlSchema) {
     const match = values.url.match(pokerNowUrlRegex)
@@ -147,7 +147,6 @@ export default function ImportPage() {
       })
     }
   }
-
 
   return (
     <div className="flex w-full flex-col items-center justify-center">
