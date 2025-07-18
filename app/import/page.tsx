@@ -58,7 +58,10 @@ export default function ImportPage() {
         <CardHeader>
           <CardTitle>Import from PokerNow</CardTitle>
           <CardDescription>
-            Paste PokerNow ledger into the text area below.
+            <p>Paste PokerNow ledger into the text area below.</p>
+            <p>
+              Log {"->"} Ledger {"->"} Download Ledger {"->"} Copy/Paste the Ledger
+            </p>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
