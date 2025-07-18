@@ -71,8 +71,8 @@ export const pokerNowSchema = z.array(
     session_start_at: z.coerce.date(),
     buy_in: centsToDollar,
     buy_out: centsToDollar,
-    stack: centsToDollar,
-    net: z.coerce.number().transform((val) => val / 100)
+    stack: centsToDollar
+    // net: z.coerce.number().transform((val) => val / 100)
   })
   // .refine(
   //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in == net,

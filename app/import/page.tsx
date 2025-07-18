@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import Link from "next/link"
 import Papa from "papaparse"
 import { useRouter } from "next/navigation"
+import { z } from "zod"
+import { Loader2 } from "lucide-react"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -14,20 +16,50 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Info } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
+const importSchema = z.object({
+  csvData: z
+    .string()
+    .min(10, "CSV data is required")
+    .refine(
+      (data) =>
+        data.includes("player_nickname") &&
+        data.includes("session_start_at") &&
+        data.includes("buy_in") &&
+        data.includes("buy_out") &&
+        data.includes("stack"),
+      "CSV must contain headers: player_nickname, session_start_at, buy_in, buy_out, stack"
+    )
+})
+
+type ImportSchema = z.infer<typeof importSchema>
+
 export default function ImportPage() {
-  const [csvInput, setCsvInput] = useState("")
-  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const handleParse = () => {
-    setError(null)
+  const form = useForm<ImportSchema>({
+    resolver: zodResolver(importSchema),
+    defaultValues: {
+      csvData: ""
+    }
+  })
+
+  async function onSubmit(values: ImportSchema) {
     try {
-      const result = Papa.parse(csvInput, {
+      const result = Papa.parse(values.csvData, {
         header: true,
         skipEmptyLines: true
       })
@@ -39,11 +71,17 @@ export default function ImportPage() {
         throw new Error(JSON.stringify(parseResult.error, null, 2))
 
       const convertedGame = convertPokerNow(parseResult.data)
-      const serializedGame = parseZipson.serialize(convertedGame)
-
-      router.push(`/?game=${encodeURIComponent(serializedGame)}`)
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "An unexpected error occurred")
+      router.push(
+        `/?game=${encodeURIComponent(parseZipson.serialize(convertedGame))}`
+      )
+    } catch (error) {
+      form.setError("csvData", {
+        type: "manual",
+        message:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred"
+      })
     }
   }
 
@@ -58,26 +96,45 @@ export default function ImportPage() {
         <CardHeader>
           <CardTitle>Import from PokerNow</CardTitle>
           <CardDescription>
-            Paste PokerNow ledger into the text area below.
+            Import from PokerNow with game link or ledger
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Textarea
-            placeholder="player_nickname,buy_in,buy_out\nPlayer1,100,200\nPlayer2,100,50"
-            value={csvInput}
-            onChange={(e) => setCsvInput(e.target.value)}
-            className="h-48"
-          />
-          <Button onClick={handleParse} className="w-full">
-            Parse Ledger
-          </Button>
-          {error && (
-            <Alert variant="destructive">
-              <Info className="h-5 w-5" />
-              <AlertTitle>Parsing Failed</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="csvData"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ledger</FormLabel>
+                    <FormDescription>
+                      Log {"->"} Ledger {"->"} Download Ledger {"->"} Copy/Paste
+                      the Ledger
+                    </FormDescription>
+                    <FormControl>
+                      <Textarea
+                        placeholder="player_nickname,buy_in,buy_out&#10;Player1,100,200&#10;Player2,100,50"
+                        {...field}
+                        className="h-32"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Parse Ledger
+              </Button>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
