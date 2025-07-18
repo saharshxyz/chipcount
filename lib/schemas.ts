@@ -68,15 +68,10 @@ const centsToDollar = dollarSchema.transform((val) => val / 100)
 export const pokerNowSchema = z.array(
   z.object({
     player_nickname: z.string(),
-    session_start_at: z.coerce.date(),
+    session_start_at: z.string(),
     buy_in: centsToDollar,
     buy_out: centsToDollar,
     stack: centsToDollar
-    // net: z.coerce.number().transform((val) => val / 100)
   })
-  // .refine(
-  //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in == net,
-  //   "`(buy_out + stack) - buy_in` should equal `net`"
-  // )
 )
 export type PokerNowSchema = z.infer<typeof pokerNowSchema>

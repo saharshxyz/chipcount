@@ -35,8 +35,6 @@ const Target = ({
     link = `https://venmo.com/?txn=${isSending ? "pay" : "charge"}&audience=friends&recipients=${target.substring(1)}&amount=${val.toFixed(2)}`
   if (target[0] === "$") link = `https://cash.app/$${target.substring(1)}`
 
-  console.log(target)
-
   return link ? (
     <a
       href={link}
