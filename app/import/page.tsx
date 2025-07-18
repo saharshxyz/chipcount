@@ -7,6 +7,7 @@ import Papa, { ParseResult } from "papaparse"
 import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { ArrowLeft, Loader2 } from "lucide-react"
+import { useQueryState } from "nuqs"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -83,10 +84,11 @@ const processParsedData = (result: ParseResult<unknown>) => {
 
 export default function ImportPage() {
   const router = useRouter()
+  const [urlParam, setUrlParam] = useQueryState("url", { defaultValue: "" })
 
   const form = useForm<ImportSchema>({
     resolver: zodResolver(importSchema),
-    defaultValues: { type: "url", url: "", csvData: "" }
+    defaultValues: { type: "url", url: urlParam, csvData: "" }
   })
 
   const activeTab = form.watch("type")
@@ -143,6 +145,7 @@ export default function ImportPage() {
 
       if (values.type === "url") {
         form.clearErrors("url")
+        setUrlParam(values.url!)
         csvData = await fetchFromUrl(values.url!)
       } else {
         form.clearErrors("csvData")
@@ -173,6 +176,10 @@ export default function ImportPage() {
                 <Input
                   placeholder="https://www.pokernow.club/games/..."
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e)
+                    setUrlParam(e.target.value)
+                  }}
                 />
               </FormControl>
               <FormMessage />
