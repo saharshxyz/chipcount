@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { type GameSchema, payoutSchema, type PayoutSchema } from './schemas';
-import { calcPayouts } from './utils';
 describe('calcPayouts', () => {
 	it('should calculate a simple payout between two players', () => {
 		const game: GameSchema = {
@@ -10,8 +9,7 @@ describe('calcPayouts', () => {
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 
 		const expected: PayoutSchema = {
 			players: [
@@ -47,8 +45,7 @@ describe('calcPayouts', () => {
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 
 		const charlie = result.players.find((p) => p.name === 'Charlie');
 		const alice = result.players.find((p) => p.name === 'Alice');
@@ -73,8 +70,7 @@ describe('calcPayouts', () => {
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 		const alice = result.players.find((p) => p.name === 'Alice');
 		const bob = result.players.find((p) => p.name === 'Bob');
 		const charlie = result.players.find((p) => p.name === 'Charlie');
@@ -97,8 +93,7 @@ describe('calcPayouts', () => {
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 
 		const expected: PayoutSchema = {
 			players: [
@@ -139,22 +134,21 @@ describe('calcPayouts', () => {
 	it('should produce a valid payout structure for a complex multi-way pot', () => {
 		const game: GameSchema = {
 			players: [
-				{ name: 'Alice', cashIn: 200, cashOut: 450 }, // +250
-				{ name: 'Bob', cashIn: 300, cashOut: 0 }, // -300
-				{ name: 'Charlie', cashIn: 100, cashOut: 200 }, // +100
-				{ name: 'Dave', cashIn: 150, cashOut: 50 }, // -100
-				{ name: 'Eve', cashIn: 50, cashOut: 100 } // +50
+				{ name: 'Alice', cashIn: 200, cashOut: 450 },
+				{ name: 'Bob', cashIn: 300, cashOut: 0 },
+				{ name: 'Charlie', cashIn: 100, cashOut: 200 },
+				{ name: 'Dave', cashIn: 150, cashOut: 50 },
+				{ name: 'Eve', cashIn: 50, cashOut: 100 }
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 
-		const alice = result.players.find((p) => p.name === 'Alice'); // Winner: +250
-		const bob = result.players.find((p) => p.name === 'Bob'); // Loser: -300
-		const charlie = result.players.find((p) => p.name === 'Charlie'); // Winner: +100
-		const dave = result.players.find((p) => p.name === 'Dave'); // Loser: -100
-		const eve = result.players.find((p) => p.name === 'Eve'); // Winner: +50
+		const alice = result.players.find((p) => p.name === 'Alice');
+		const bob = result.players.find((p) => p.name === 'Bob');
+		const charlie = result.players.find((p) => p.name === 'Charlie');
+		const dave = result.players.find((p) => p.name === 'Dave');
+		const eve = result.players.find((p) => p.name === 'Eve');
 
 		expect(bob?.paidBy).toContainEqual({ target: 'Alice', value: 250 });
 		expect(bob?.paidBy).toContainEqual({ target: 'Charlie', value: 50 });
@@ -176,8 +170,7 @@ describe('calcPayouts', () => {
 			]
 		};
 
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 		expect(result.slippage).toBe(10);
 		const alice = result.players.find((p) => p.name === 'Alice');
 		const bob = result.players.find((p) => p.name === 'Bob');
@@ -191,19 +184,16 @@ describe('calcPayouts', () => {
 	it('should correctly handle a game with negative slippage (house rake)', () => {
 		const game: GameSchema = {
 			players: [
-				{ name: 'Alice', cashIn: 100, cashOut: 150 }, // +50
-				{ name: 'Bob', cashIn: 100, cashOut: 60 } // -40
+				{ name: 'Alice', cashIn: 100, cashOut: 150 },
+				{ name: 'Bob', cashIn: 100, cashOut: 60 }
 			]
 		};
-		// Total in: 200, Total out: 210. Slippage = -10 (house took 10)
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+
+		const result = payoutSchema.parse(game);
 		expect(result.slippage).toBe(-10);
 		const alice = result.players.find((p) => p.name === 'Alice');
 		const bob = result.players.find((p) => p.name === 'Bob');
 
-		// alice_net = 50 + (-10/2) = 45
-		// bob_net = -40 + (-10/2) = -45
 		expect(alice?.net).toBeCloseTo(45);
 		expect(bob?.net).toBeCloseTo(-45);
 		expect(bob?.paidBy).toEqual([{ target: 'Alice', value: 45 }]);
@@ -217,8 +207,7 @@ describe('calcPayouts', () => {
 				{ name: 'Bob', cashIn: 75.25, cashOut: 25.75 }
 			]
 		};
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 
 		expect(result.slippage).toBeCloseTo(-0.25);
 
@@ -238,8 +227,7 @@ describe('calcPayouts', () => {
 				{ name: 'Bob', cashIn: 50, cashOut: 50 }
 			]
 		};
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 		expect(result.slippage).toBe(0);
 		result.players.forEach((p) => {
 			expect(p.net).toBe(0);
@@ -251,16 +239,15 @@ describe('calcPayouts', () => {
 	it('should handle a zero-sum game with many players', () => {
 		const game: GameSchema = {
 			players: [
-				{ name: 'A', cashIn: 10, cashOut: 20 }, // +10
-				{ name: 'B', cashIn: 10, cashOut: 0 }, // -10
-				{ name: 'C', cashIn: 20, cashOut: 40 }, // +20
-				{ name: 'D', cashIn: 20, cashOut: 0 }, // -20
-				{ name: 'E', cashIn: 30, cashOut: 60 }, // +30
-				{ name: 'F', cashIn: 30, cashOut: 0 } // -30
+				{ name: 'A', cashIn: 10, cashOut: 20 },
+				{ name: 'B', cashIn: 10, cashOut: 0 },
+				{ name: 'C', cashIn: 20, cashOut: 40 },
+				{ name: 'D', cashIn: 20, cashOut: 0 },
+				{ name: 'E', cashIn: 30, cashOut: 60 },
+				{ name: 'F', cashIn: 30, cashOut: 0 }
 			]
 		};
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 		expect(result.slippage).toBe(0);
 		const sumOfNets = result.players.reduce((acc, p) => acc + p.net, 0);
 		expect(sumOfNets).toBeCloseTo(0);
@@ -281,15 +268,14 @@ describe('calcPayouts', () => {
 	it('should handle a game with one winner, one loser, and many break-even players', () => {
 		const game: GameSchema = {
 			players: [
-				{ name: 'Winner', cashIn: 100, cashOut: 200 }, // +100
-				{ name: 'Loser', cashIn: 100, cashOut: 0 }, // -100
-				{ name: 'Even1', cashIn: 50, cashOut: 50 }, // 0
-				{ name: 'Even2', cashIn: 50, cashOut: 50 }, // 0
-				{ name: 'Even3', cashIn: 50, cashOut: 50 } // 0
+				{ name: 'Winner', cashIn: 100, cashOut: 200 },
+				{ name: 'Loser', cashIn: 100, cashOut: 0 },
+				{ name: 'Even1', cashIn: 50, cashOut: 50 },
+				{ name: 'Even2', cashIn: 50, cashOut: 50 },
+				{ name: 'Even3', cashIn: 50, cashOut: 50 }
 			]
 		};
-		const result = calcPayouts(game);
-		payoutSchema.parse(result);
+		const result = payoutSchema.parse(game);
 		expect(result.slippage).toBe(0);
 
 		const winner = result.players.find((p) => p.name === 'Winner');

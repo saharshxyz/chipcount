@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Actions from '$lib/components/Actions.svelte';
+	import GameForm from '$lib/components/GameForm.svelte';
 </script>
 
-<div class="p-5">
+<main class="p-5">
 	<Actions />
-</div>
+	<GameForm />
+</main>
