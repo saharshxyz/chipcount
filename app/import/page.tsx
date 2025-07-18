@@ -28,38 +28,45 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { pokerNowSchema } from "@/lib/schemas"
+import { GameSchema, pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
-const pokerNowUrlRegex = new RegExp(
-  /^https:\/\/www\.pokernow\.club\/games\/([^/]+)$/
-)
+const pokerNowUrlRegex = /^https:\/\/www\.pokernow\.club\/games\/([^/]+)$/
 
-const importUrlSchema = z.object({
-  url: z
-    .string()
-    .url({ message: "Please enter a valid URL." })
-    .regex(pokerNowUrlRegex, {
-      message: "Please provide a valid PokerNow game URL."
-    })
-})
-type ImportUrlSchema = z.infer<typeof importUrlSchema>
+const importSchema = z
+  .object({
+    type: z.enum(["url", "ledger"]),
+    url: z.string().optional(),
+    csvData: z.string().optional()
+  })
+  .refine(
+    (data) => {
+      if (data.type === "url") {
+        return (
+          data.url &&
+          z.string().url().safeParse(data.url).success &&
+          pokerNowUrlRegex.test(data.url)
+        )
+      }
+      if (data.type === "ledger") {
+        return (
+          data.csvData &&
+          data.csvData.length >= 10 &&
+          data.csvData.includes("player_nickname") &&
+          data.csvData.includes("session_start_at") &&
+          data.csvData.includes("buy_in") &&
+          data.csvData.includes("buy_out") &&
+          data.csvData.includes("stack")
+        )
+      }
+      return false
+    },
+    {
+      message: "Invalid input for selected type"
+    }
+  )
 
-const importLedgerSchema = z.object({
-  csvData: z
-    .string()
-    .min(10, "CSV data is required")
-    .refine(
-      (data) =>
-        data.includes("player_nickname") &&
-        data.includes("session_start_at") &&
-        data.includes("buy_in") &&
-        data.includes("buy_out") &&
-        data.includes("stack"),
-      "CSV must contain headers: player_nickname, session_start_at, buy_in, buy_out, stack"
-    )
-})
-type ImportLedgerSchema = z.infer<typeof importLedgerSchema>
+type ImportSchema = z.infer<typeof importSchema>
 
 const processParsedData = (result: ParseResult<unknown>) => {
   if (result.errors.length) {
@@ -77,74 +84,126 @@ const processParsedData = (result: ParseResult<unknown>) => {
 export default function ImportPage() {
   const router = useRouter()
 
-  const urlForm = useForm<ImportUrlSchema>({
-    resolver: zodResolver(importUrlSchema),
-    defaultValues: { url: "" }
+  const form = useForm<ImportSchema>({
+    resolver: zodResolver(importSchema),
+    defaultValues: { type: "url", url: "", csvData: "" }
   })
 
-  const ledgerForm = useForm<ImportLedgerSchema>({
-    resolver: zodResolver(importLedgerSchema),
-    defaultValues: { csvData: "" }
-  })
+  const activeTab = form.watch("type")
 
-  async function onUrlSubmit(values: ImportUrlSchema) {
-    const match = values.url.match(pokerNowUrlRegex)
-    const gameId = match![1]
+  const navigateToGame = (convertedGame: GameSchema) =>
+    router.push(
+      `/?game=${encodeURIComponent(parseZipson.serialize(convertedGame))}`
+    )
+
+  const handleError = (error: unknown, field: keyof ImportSchema) => {
+    const message =
+      error instanceof Error ? error.message : "An unexpected error occurred."
+    if (field === "url" || field === "csvData")
+      form.setError(field, { type: "manual", message })
+  }
+
+  const fetchFromUrl = async (url: string) => {
+    const gameId = url.match(pokerNowUrlRegex)![1]
     const ledgerUrl = `https://www.pokernow.club/games/${gameId}/ledger_${gameId}.csv`
 
-    return new Promise<void>((resolve) => {
-      Papa.parse(ledgerUrl, {
-        download: true,
+    const response = await fetch(
+      `/api/fetchPokerNowLedger?url=${encodeURIComponent(ledgerUrl)}`
+    )
+    const data = await response.json()
+
+    if (!response.ok || data.error)
+      throw new Error(data.error || "Failed to fetch data from server.")
+
+    return data.csvData
+  }
+
+  const parseCsvData = (csvData: string) => {
+    return new Promise<GameSchema>((resolve, reject) => {
+      Papa.parse(csvData, {
         header: true,
         skipEmptyLines: true,
         complete: (result) => {
           try {
             const convertedGame = processParsedData(result)
-            router.push(
-              `/?game=${encodeURIComponent(parseZipson.serialize(convertedGame))}`
-            )
+            resolve(convertedGame)
           } catch (error) {
-            urlForm.setError("url", {
-              type: "manual",
-              message:
-                error instanceof Error
-                  ? error.message
-                  : "An unexpected error occurred."
-            })
-          } finally {
-            resolve()
+            reject(error)
           }
         },
-        error: (error) => {
-          urlForm.setError("url", {
-            type: "manual",
-            message: `Failed to download or parse CSV: ${error.message}`
-          })
-          resolve()
-        }
+        error: (error: Error) =>
+          reject(new Error(`Failed to parse CSV: ${error.message}`))
       })
     })
   }
 
-  async function onLedgerSubmit(values: ImportLedgerSchema) {
+  const onSubmit = async (values: ImportSchema) => {
     try {
-      const result = Papa.parse(values.csvData, {
-        header: true,
-        skipEmptyLines: true
-      })
-      const convertedGame = processParsedData(result)
-      router.push(
-        `/?game=${encodeURIComponent(parseZipson.serialize(convertedGame))}`
-      )
+      let csvData: string
+
+      if (values.type === "url") {
+        form.clearErrors("url")
+        csvData = await fetchFromUrl(values.url!)
+      } else {
+        form.clearErrors("csvData")
+        csvData = values.csvData!
+      }
+
+      const convertedGame = await parseCsvData(csvData)
+      navigateToGame(convertedGame)
     } catch (error) {
-      ledgerForm.setError("csvData", {
-        type: "manual",
-        message:
-          error instanceof Error
-            ? error.message
-            : "An unexpected error occurred."
-      })
+      const fieldName = values.type === "url" ? "url" : "csvData"
+      handleError(error, fieldName)
     }
+  }
+
+  const renderFormField = () => {
+    if (activeTab === "url") {
+      return (
+        <FormField
+          control={form.control}
+          name="url"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Game URL</FormLabel>
+              <FormDescription>
+                Paste the URL of your PokerNow game lobby.
+              </FormDescription>
+              <FormControl>
+                <Input
+                  placeholder="https://www.pokernow.club/games/..."
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )
+    }
+
+    return (
+      <FormField
+        control={form.control}
+        name="csvData"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Ledger</FormLabel>
+            <FormDescription>
+              Log → Ledger → Download Ledger → Copy/Paste the data
+            </FormDescription>
+            <FormControl>
+              <Textarea
+                placeholder="player_nickname,buy_in,buy_out\nPlayer1,100,200\nPlayer2,100,50"
+                {...field}
+                className="h-32"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
   }
 
   return (
@@ -162,91 +221,44 @@ export default function ImportPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="url" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="url">From URL</TabsTrigger>
-              <TabsTrigger value="ledger">Paste Ledger</TabsTrigger>
-            </TabsList>
+          <Form {...form}>
+            <Tabs
+              value={activeTab}
+              onValueChange={(value) =>
+                form.setValue("type", value as "url" | "ledger")
+              }
+              className="w-full"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="url">From URL</TabsTrigger>
+                <TabsTrigger value="ledger">Paste Ledger</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="url">
-              <Form {...urlForm}>
-                <form
-                  onSubmit={urlForm.handleSubmit(onUrlSubmit)}
-                  className="space-y-4 pt-4"
-                >
-                  <FormField
-                    control={urlForm.control}
-                    name="url"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Game URL</FormLabel>
-                        <FormDescription>
-                          Paste the URL of your PokerNow game lobby.
-                        </FormDescription>
-                        <FormControl>
-                          <Input
-                            placeholder="https://www.pokernow.club/games/..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={urlForm.formState.isSubmitting}
-                  >
-                    {urlForm.formState.isSubmitting && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Import from URL
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 pt-4"
+              >
+                <TabsContent value="url" className="space-y-4">
+                  {renderFormField()}
+                </TabsContent>
 
-            <TabsContent value="ledger">
-              <Form {...ledgerForm}>
-                <form
-                  onSubmit={ledgerForm.handleSubmit(onLedgerSubmit)}
-                  className="space-y-4 pt-4"
+                <TabsContent value="ledger" className="space-y-4">
+                  {renderFormField()}
+                </TabsContent>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={form.formState.isSubmitting}
                 >
-                  <FormField
-                    control={ledgerForm.control}
-                    name="csvData"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ledger</FormLabel>
-                        <FormDescription>
-                          Log → Ledger → Download Ledger → Copy/Paste the data
-                        </FormDescription>
-                        <FormControl>
-                          <Textarea
-                            placeholder="player_nickname,buy_in,buy_out&#10;Player1,100,200&#10;Player2,100,50"
-                            {...field}
-                            className="h-32"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={ledgerForm.formState.isSubmitting}
-                  >
-                    {ledgerForm.formState.isSubmitting && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    Parse Ledger
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
-          </Tabs>
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {activeTab === "url" ? "Import from URL" : "Parse Ledger"}
+                </Button>
+              </form>
+            </Tabs>
+          </Form>
         </CardContent>
       </Card>
     </div>

@@ -61,7 +61,9 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
 export const convertPokerNow = (data: PokerNowSchema): GameSchema => {
   const startTime = data.reduce(
     (earliest, { session_start_at }) =>
-      session_start_at < earliest ? session_start_at : earliest,
+      new Date(session_start_at) < earliest
+        ? new Date(session_start_at)
+        : earliest,
     new Date()
   )
 
