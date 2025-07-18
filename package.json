@@ -13,9 +13,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-separator": "^1.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
+    "@types/papaparse": "^5.3.16",
     "chroma-js": "^3.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -32,7 +30,8 @@
     "tailwind-merge": "^3.3.1",
     "vite-tsconfig-paths": "^5.1.4",
     "zipson": "^0.2.12",
-    "zod": "^4"
+    "zod": "^3",
+    "radix-ui": "latest"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

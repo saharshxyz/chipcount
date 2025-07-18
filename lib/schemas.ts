@@ -67,10 +67,10 @@ export const pokerNowSchema = z.array(
   z.object({
     player_nickname: z.string(),
     session_start_at: z.coerce.date(),
-    buy_in: dollarSchema.pipe(z.transform((val) => val / 100)),
-    buy_out: dollarSchema.pipe(z.transform((val) => val / 100)),
-    stack: dollarSchema.pipe(z.transform((val) => val / 100)),
-    net: z.coerce.number().pipe(z.transform((val) => val / 100))
+    buy_in: dollarSchema.transform((val) => val / 100),
+    buy_out: dollarSchema.transform((val) => val / 100),
+    stack: dollarSchema.transform((val) => val / 100),
+    net: z.coerce.number().transform((val) => val / 100)
   })
   // .refine(
   //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in === net,

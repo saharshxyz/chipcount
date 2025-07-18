@@ -17,7 +17,6 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Info } from "lucide-react"
 import { pokerNowSchema } from "@/lib/schemas"
-import * as z from "zod"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
 export default function ImportPage() {
@@ -37,7 +36,7 @@ export default function ImportPage() {
       if (result.errors.length)
         throw new Error(result.errors.map((e) => e.message).join(", "))
       if (!parseResult.success)
-        throw new Error(z.prettifyError(parseResult.error))
+        throw new Error(JSON.stringify(parseResult.error, null, 2))
 
       const convertedGame = convertPokerNow(parseResult.data)
       const serializedGame = parseZipson.serialize(convertedGame)
