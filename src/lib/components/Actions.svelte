@@ -14,9 +14,10 @@
 </script>
 
 <div class="flex w-full flex-col items-center justify-center">
-  <div class="mb-2 flex flex-row justify-center space-x-2">
-    <Button href="/" variant="outline" data-sveltekit-reload><Eraser 
-    class="mr-1" />Clear Form</Button>
-    <Button class="max-w-full" onclick={copyLink}><Link class="mr-1" />Copy Link</Button>
-  </div>
+	<div class="mb-2 flex flex-row justify-center space-x-2">
+		<Button href="/" variant="outline" data-sveltekit-reload
+			><Eraser class="mr-1" />Clear Form</Button
+		>
+		<Button class="max-w-full" onclick={copyLink}><Link class="mr-1" />Copy Link</Button>
+	</div>
 </div>

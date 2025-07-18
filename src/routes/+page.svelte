@@ -2,4 +2,6 @@
 	import Actions from '$lib/components/Actions.svelte';
 </script>
 
-<Actions />
+<div class="p-5">
+	<Actions />
+</div>

@@ -8,6 +8,4 @@
 
 <Toaster richColors expand={false} position="bottom-center" />
 
-<div class="p-5">
-	{@render children()}
-</div>
+{@render children()}
