@@ -21,10 +21,14 @@ const paySchema = z.object({
 })
 export type PaySchema = z.infer<typeof paySchema>
 
-const playerSchema = z.object({
+const basicPlayerSchema = z.object({
   name: nameSchema,
   cashIn: dollarSchema,
-  cashOut: dollarSchema,
+  cashOut: dollarSchema
+})
+export type BasicPlayerSchema = z.infer<typeof basicPlayerSchema>
+
+const playerSchema = basicPlayerSchema.extend({
   net: z.number(),
   paidBy: z
     .array(paySchema)
@@ -45,9 +49,7 @@ export const gameSchema = z.object({
     .max(60)
     .default(`${formattedDateTime()} Game`)
     .optional(),
-  players: uniqueNameArraySchema(
-    playerSchema.pick({ name: true, cashIn: true, cashOut: true })
-  )
+  players: uniqueNameArraySchema(basicPlayerSchema)
 })
 export type GameSchema = z.infer<typeof gameSchema>
 
@@ -60,3 +62,19 @@ export const payoutSchema = z.object({
     )
 })
 export type PayoutSchema = z.infer<typeof payoutSchema>
+
+export const pokerNowSchema = z.array(
+  z.object({
+    player_nickname: z.string(),
+    session_start_at: z.coerce.date(),
+    buy_in: dollarSchema.pipe(z.transform((val) => val / 100)),
+    buy_out: dollarSchema.pipe(z.transform((val) => val / 100)),
+    stack: dollarSchema.pipe(z.transform((val) => val / 100)),
+    net: z.coerce.number().pipe(z.transform((val) => val / 100))
+  })
+  // .refine(
+  //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in === net,
+  //   "`(buy_out + stack) - buy_in` should equal `net`"
+  // )
+)
+export type PokerNowSchema = z.infer<typeof pokerNowSchema>

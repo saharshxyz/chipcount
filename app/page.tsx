@@ -2,6 +2,7 @@
 
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -13,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { Eraser, Link as LinkIcon } from "lucide-react"
+import { Eraser, Import, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -29,7 +30,7 @@ export default function Home() {
     <div>
       <div className="flex w-full flex-col items-center justify-center">
         <div className="mb-2 flex flex-row justify-center space-x-2">
-          <Link href={`/`} onClick={() => window.location.reload()}>
+          <Link href="/" onClick={() => window.location.reload()}>
             <Button variant="outline">
               <Eraser className="mr-1" />
               Clear Form
@@ -46,6 +47,13 @@ export default function Home() {
             <CardDescription>
               Enter player details to calculate payouts.
             </CardDescription>
+            <CardAction>
+              <Link href="/import">
+                <Button size="icon">
+                  <Import />
+                </Button>
+              </Link>
+            </CardAction>
           </CardHeader>
           <CardContent>
             <Suspense fallback={<Skeleton className="h-[150px] rounded-l" />}>
@@ -65,7 +73,7 @@ export default function Home() {
             <PayoutStats />
           </Suspense>
         </div>
-        <p className="mt-5">
+        <p className="mt-3">
           <a
             href="https://github.com/saharshxyz/chipcount"
             className="text-link"

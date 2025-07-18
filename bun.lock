@@ -23,7 +23,7 @@
         "tailwind-merge": "^3.3.1",
         "vite-tsconfig-paths": "^5.1.4",
         "zipson": "^0.2.12",
-        "zod": "^3.25.64",
+        "zod": "^4",
       },
       "devDependencies": {
         "@eslint/eslintrc": "^3",
@@ -1102,7 +1102,7 @@
 
     "zipson": ["zipson@0.2.12", "", {}, "sha512-+u+fyZQXJUJDTf4NGCChW+LoWGqCrhwHAfvtCtcmE0e40KmQt4YSP4l3TOay1WjRNv+VfODgBD/vNwaSSGnDwA=="],
 
-    "zod": ["zod@3.25.64", "", {}, "sha512-hbP9FpSZf7pkS7hRVUrOjhwKJNyampPgtXKc3AN6DsWtoHsg2Sb4SQaS4Tcay380zSwd2VPo9G9180emBACp5g=="],
+    "zod": ["zod@4.0.5", "", {}, "sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA=="],
 
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 

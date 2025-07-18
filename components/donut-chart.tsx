@@ -47,7 +47,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   ) satisfies ChartConfig
 
   const totalPot = useMemo(() => {
-    return playersData.reduce((acc, curr) => acc + curr.cashIn, 0)
+    return playersData.reduce((acc, curr) => acc + curr.cashOut, 0)
   }, [playersData])
 
   return (
@@ -116,7 +116,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
                         y={viewBox.cy}
                         className="fill-foreground text-3xl font-bold"
                       >
-                        {formatDollar(totalPot)}
+                        {formatDollar(Math.floor(totalPot))}
                       </tspan>
                       <tspan
                         x={viewBox.cx}
