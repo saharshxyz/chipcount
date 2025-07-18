@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useQueryState } from "nuqs"
+import { Suspense } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
+import { Skeleton } from "@/components/ui/skeleton"
 import { GameSchema, pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
@@ -82,7 +84,7 @@ const processParsedData = (result: ParseResult<unknown>) => {
   return convertPokerNow(validation.data)
 }
 
-export default function ImportPage() {
+function ImportPageContent() {
   const router = useRouter()
   const [urlParam, setUrlParam] = useQueryState("url", { defaultValue: "" })
 
@@ -269,5 +271,17 @@ export default function ImportPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function ImportPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex w-full flex-col items-center justify-center">
+        <Skeleton className="h-96 w-full max-w-prose" />
+      </div>
+    }>
+      <ImportPageContent />
+    </Suspense>
   )
 }
