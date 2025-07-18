@@ -28,10 +28,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { PokerNowSchema, pokerNowSchema } from "@/lib/schemas"
+import { pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
-// --- Schemas for both form types (Unchanged) ---
 const pokerNowUrlRegex = new RegExp(
   /^https:\/\/www\.pokernow\.club\/games\/([^/]+)$/
 )
@@ -62,7 +61,7 @@ const importLedgerSchema = z.object({
 })
 type ImportLedgerSchema = z.infer<typeof importLedgerSchema>
 
-const processParsedData = (result: ParseResult<PokerNowSchema>) => {
+const processParsedData = (result: ParseResult<unknown>) => {
   if (result.errors.length) {
     const errorMessages = result.errors.map((e) => e.message).join(", ")
     throw new Error(`CSV Parsing Error: ${errorMessages}`)
