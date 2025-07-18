@@ -13,7 +13,7 @@ const uniqueNameArraySchema = <T extends { name: string }>(
       message: "Player names must be unique"
     })
 
-const nameSchema = z.string().min(1)
+const nameSchema = z.string().min(1).trim()
 const dollarSchema = z.coerce.number().nonnegative()
 const paySchema = z.object({
   target: nameSchema,
@@ -33,13 +33,11 @@ const playerSchema = basicPlayerSchema.extend({
   paidBy: z
     .array(paySchema)
     .describe(
-      "Payments this player made to others. 'target' is who they paid."
+      "Payments this player received from others. 'target' is who paid them."
     ),
   paidTo: z
     .array(paySchema)
-    .describe(
-      "Payments this player received from others. 'target' is who paid them."
-    )
+    .describe("Payments this player made to others. 'target' is who they paid.")
 })
 export type PlayerSchema = z.infer<typeof playerSchema>
 
@@ -47,6 +45,7 @@ export const gameSchema = z.object({
   description: z
     .string()
     .max(60)
+    .trim()
     .default(`${formattedDateTime()} Game`)
     .optional(),
   players: uniqueNameArraySchema(basicPlayerSchema)
@@ -63,17 +62,19 @@ export const payoutSchema = z.object({
 })
 export type PayoutSchema = z.infer<typeof payoutSchema>
 
+const centsToDollar = dollarSchema.transform((val) => val / 100)
+
 export const pokerNowSchema = z.array(
   z.object({
     player_nickname: z.string(),
     session_start_at: z.coerce.date(),
-    buy_in: dollarSchema.transform((val) => val / 100),
-    buy_out: dollarSchema.transform((val) => val / 100),
-    stack: dollarSchema.transform((val) => val / 100),
+    buy_in: centsToDollar,
+    buy_out: centsToDollar,
+    stack: centsToDollar,
     net: z.coerce.number().transform((val) => val / 100)
   })
   // .refine(
-  //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in === net,
+  //   ({ buy_in, buy_out, stack, net }) => buy_out + stack - buy_in == net,
   //   "`(buy_out + stack) - buy_in` should equal `net`"
   // )
 )

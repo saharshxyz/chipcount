@@ -10,13 +10,52 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TrendingDown, TrendingUp } from "lucide-react"
 import { formatDollar } from "@/lib/utils"
+import { IoLogoVenmo } from "react-icons/io5"
+import { SiCashapp } from "react-icons/si"
 
-const Stat = ({ label, value }: { label: string; value: number }) => (
+const Stat = ({ label, value: val }: { label: string; value: number }) => (
   <div className="bg-secondary flex w-full flex-col items-center justify-center rounded-sm py-1.5 transition-all">
     <p>{label}</p>
-    <p className="font-bold">{formatDollar(value)}</p>
+    <p className="font-bold">{formatDollar(val)}</p>
   </div>
 )
+
+const Target = ({
+  target,
+  isSending,
+  val
+}: {
+  target: string
+  isSending: boolean
+  val: number
+}) => {
+  let link: string = ""
+
+  if (target[0] === "@")
+    link = `https://venmo.com/?txn=${isSending ? "pay" : "charge"}&audience=friends&recipients=${target.substring(1)}&amount=${val.toFixed(2)}`
+  if (target[0] === "$") link = `https://cash.app/${target}`
+
+  console.log(target)
+
+  return link ? (
+    <a
+      href={link}
+      target="_blank"
+      referrerPolicy="no-referrer"
+      rel="noopener"
+      className="text-link inline-flex flex-row items-center m-0 p-0"
+    >
+      <span>{target.substring(1)}</span>
+      {target[0] === "@" ? (
+        <IoLogoVenmo className="ml-1" />
+      ) : target[0] === "$" ? (
+        <SiCashapp className="ml-1" />
+      ) : null}
+    </a>
+  ) : (
+    <>{target}</>
+  )
+}
 
 export function PlayerSummary({
   player,
@@ -56,13 +95,12 @@ export function PlayerSummary({
           )}
         </CardDescription>
         <CardAction
-          className={`text-2xl font-semibold ${
-            player.net > 1e-9
-              ? "text-success"
-              : player.net < -1e-9
-                ? "text-destructive"
-                : ""
-          }`}
+          className={`text-2xl font-semibold ${player.net > 1e-9
+            ? "text-success"
+            : player.net < -1e-9
+              ? "text-destructive"
+              : ""
+            }`}
         >
           {formatDollar(player.net)}
         </CardAction>
@@ -80,7 +118,12 @@ export function PlayerSummary({
                       <span className="font-bold">
                         {formatDollar(to.value)}
                       </span>{" "}
-                      {type.preposition} {to.target}
+                      {type.preposition}{" "}
+                      <Target
+                        target={to.target}
+                        isSending={type.variant === "destructive"}
+                        val={to.value}
+                      />
                     </li>
                   ))}
                 </ul>

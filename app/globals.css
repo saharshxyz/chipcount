@@ -144,5 +144,9 @@
 }
 
 .text-link {
-  @apply text-muted-foreground underline underline-offset-3 duration-200 ease-in-out hover:underline-offset-1;
+  @apply underline underline-offset-3 duration-200 ease-in-out hover:underline-offset-1;
+}
+
+.react-icons {
+  vertical-align: middle;
 }

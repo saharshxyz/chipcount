@@ -45,7 +45,7 @@ export default function Home() {
           <CardHeader>
             <CardTitle>ChipCount</CardTitle>
             <CardDescription>
-              Enter player details to calculate payouts.
+              Enter player details to calculate payouts
             </CardDescription>
             <CardAction>
               <Link href="/import">
@@ -76,7 +76,7 @@ export default function Home() {
         <p className="mt-3">
           <a
             href="https://github.com/saharshxyz/chipcount"
-            className="text-link"
+            className="text-link text-muted-foreground"
             target="_blank"
             rel="noopener"
           >
@@ -85,7 +85,7 @@ export default function Home() {
           by{" "}
           <a
             href="https://saharsh.xyz"
-            className="text-link"
+            className="text-link text-muted-foreground"
             target="_blank"
             rel="noopener"
           >
