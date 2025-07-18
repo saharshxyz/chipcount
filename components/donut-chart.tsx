@@ -36,7 +36,7 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   const colors = genColors(smallestNet, largestNet)
 
   const playersData = players.map((player) => ({
-    name: player.name,
+    name: player.displayName,
     cashIn: player.cashIn,
     cashOut: player.cashOut,
     fill: colors[Math.floor(player.net + Math.abs(smallestNet))]

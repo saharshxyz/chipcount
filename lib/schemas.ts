@@ -29,6 +29,7 @@ const basicPlayerSchema = z.object({
 export type BasicPlayerSchema = z.infer<typeof basicPlayerSchema>
 
 const playerSchema = basicPlayerSchema.extend({
+  displayName: nameSchema,
   net: z.number(),
   paidBy: z
     .array(paySchema)

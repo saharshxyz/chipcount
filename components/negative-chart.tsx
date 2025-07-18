@@ -38,12 +38,12 @@ export function NegativeChart({ players }: { players: PlayerSchema[] }) {
           content={
             <ChartTooltipContent
               indicator="line"
-              labelFormatter={(_, payload) => payload[0].payload.name}
+              labelFormatter={(_, payload) => payload[0].payload.displayName}
             />
           }
         />
         <Bar dataKey="net">
-          <LabelList position="bottom" dataKey="name" fillOpacity={1} />
+          <LabelList position="bottom" dataKey="displayName" fillOpacity={1} />
           <LabelList
             position="top"
             dataKey="net"

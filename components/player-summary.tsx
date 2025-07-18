@@ -33,7 +33,7 @@ const Target = ({
 
   if (target[0] === "@")
     link = `https://venmo.com/?txn=${isSending ? "pay" : "charge"}&audience=friends&recipients=${target.substring(1)}&amount=${val.toFixed(2)}`
-  if (target[0] === "$") link = `https://cash.app/${target}`
+  if (target[0] === "$") link = `https://cash.app/$${target.substring(1)}`
 
   console.log(target)
 
@@ -86,7 +86,7 @@ export function PlayerSummary({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{player.name}</CardTitle>
+        <CardTitle>{player.displayName}</CardTitle>
         <CardDescription className="flex flex-row items-center justify-center gap-2 transition-all">
           <Stat label="Cash In" value={player.cashIn} />
           <Stat label="Cash Out" value={player.cashOut} />

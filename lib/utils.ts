@@ -22,7 +22,8 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
         net,
         paidBy: [] as PaySchema[],
         paidTo: [] as PaySchema[],
-        balance: net
+        balance: net,
+        displayName: p.name[0] === '@' || p.name[0] === '$' ? p.name.substring(1) : p.name
       }
     })
     .sort((a, b) => a.balance - b.balance)
