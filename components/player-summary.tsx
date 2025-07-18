@@ -43,7 +43,7 @@ const Target = ({
       target="_blank"
       referrerPolicy="no-referrer"
       rel="noopener"
-      className="text-link inline-flex flex-row items-center m-0 p-0"
+      className="text-link inline-flex flex-row items-center"
     >
       <span>{target.substring(1)}</span>
       {target[0] === "@" ? (
@@ -96,10 +96,10 @@ export function PlayerSummary({
         </CardDescription>
         <CardAction
           className={`text-2xl font-semibold ${player.net > 1e-9
-            ? "text-success"
-            : player.net < -1e-9
-              ? "text-destructive"
-              : ""
+              ? "text-success"
+              : player.net < -1e-9
+                ? "text-destructive"
+                : ""
             }`}
         >
           {formatDollar(player.net)}

@@ -129,7 +129,9 @@ export function GameForm() {
 
         <div className="space-y-2">
           <FormLabel className="grow">Players</FormLabel>
-          <FormDescription>Prefix names with @ or $ to link to Venmo and Cashapp</FormDescription>
+          <FormDescription>
+            Prefix names with @ or $ to link to Venmo and Cashapp
+          </FormDescription>
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-start space-x-2">
               <PlayerField

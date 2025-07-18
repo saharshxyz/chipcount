@@ -13,7 +13,7 @@ const uniqueNameArraySchema = <T extends { name: string }>(
       message: "Player names must be unique"
     })
 
-const nameSchema = z.string().min(1).trim()
+const nameSchema = z.string().min(1).max(30).trim()
 const dollarSchema = z.coerce.number().nonnegative()
 const paySchema = z.object({
   target: nameSchema,
