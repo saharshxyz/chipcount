@@ -100,7 +100,8 @@ export function GameForm() {
 
   useEffect(() => {
     const subscription = form.watch((value) => {
-      setGame(value)
+      const parsedVal = gameSchema.safeParse(value)
+      setGame(parsedVal.success ? parsedVal.data : value)
     })
     return () => subscription.unsubscribe()
   }, [form, setGame])

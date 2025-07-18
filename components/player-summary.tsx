@@ -95,12 +95,13 @@ export function PlayerSummary({
           )}
         </CardDescription>
         <CardAction
-          className={`text-2xl font-semibold ${player.net > 1e-9
+          className={`text-2xl font-semibold ${
+            player.net > 1e-9
               ? "text-success"
               : player.net < -1e-9
                 ? "text-destructive"
                 : ""
-            }`}
+          }`}
         >
           {formatDollar(player.net)}
         </CardAction>
