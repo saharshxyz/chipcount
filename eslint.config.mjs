@@ -10,11 +10,16 @@ const compat = new FlatCompat({
 })
 
 const eslintConfig = [
-  ...compat.extends(
-    "next/core-web-vitals",
-    "next/typescript",
-    "plugin:@next/next/recommended"
-  )
+  ...compat.config({
+    extends: [
+      "next/core-web-vitals",
+      "next/typescript",
+      "plugin:@next/next/recommended"
+    ],
+    rules: {
+      "@next/next/no-html-link-for-pages": "off"
+    }
+  })
 ]
 
 export default eslintConfig

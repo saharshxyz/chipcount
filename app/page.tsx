@@ -30,12 +30,12 @@ export default function Home() {
     <div>
       <div className="flex w-full flex-col items-center justify-center">
         <div className="mb-2 flex flex-row justify-center space-x-2">
-          <Link href="/" onClick={() => window.location.reload()}>
+          <a href="/" onClick={() => window.location.reload()}>
             <Button variant="outline">
               <Eraser className="mr-1" />
               Clear Form
             </Button>
-          </Link>
+          </a>
           <Button onClick={copyUrlToClipboard} className="max-w-full">
             <LinkIcon className="mr-1" />
             Copy Link
