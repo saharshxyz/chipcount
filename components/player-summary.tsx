@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TrendingDown, TrendingUp } from "lucide-react"
-import { formatDollar } from "@/lib/utils"
+import { formatDollar, formattedDateTime } from "@/lib/utils"
 import { IoLogoVenmo } from "react-icons/io5"
 import { SiCashapp } from "react-icons/si"
 
@@ -31,9 +31,20 @@ const Target = ({
 }) => {
   let link: string = ""
 
-  if (target[0] === "@")
-    link = `https://venmo.com/?txn=${isSending ? "pay" : "charge"}&audience=friends&recipients=${target.substring(1)}&amount=${val.toFixed(2)}`
-  if (target[0] === "$") link = `https://cash.app/$${target.substring(1)}`
+  if (target[0] === "@") {
+    const venmoUrl = new URL("https://venmo.com/")
+    Object.entries({
+      txn: isSending ? "pay" : "charge",
+      audience: "friends",
+      recipients: target.substring(1),
+      amount: val.toFixed(2),
+      note: `${formattedDateTime} Game`
+    }).forEach(([key, value]) => venmoUrl.searchParams.set(key, value))
+    link = venmoUrl.toString()
+  }
+  if (target[0] === "$") {
+    link = `https://cash.app/$${target.substring(1)}`
+  }
 
   return link ? (
     <a
@@ -93,13 +104,12 @@ export function PlayerSummary({
           )}
         </CardDescription>
         <CardAction
-          className={`text-2xl font-semibold ${
-            player.net > 1e-9
-              ? "text-success"
-              : player.net < -1e-9
-                ? "text-destructive"
-                : ""
-          }`}
+          className={`text-2xl font-semibold ${player.net > 1e-9
+            ? "text-success"
+            : player.net < -1e-9
+              ? "text-destructive"
+              : ""
+            }`}
         >
           {formatDollar(player.net)}
         </CardAction>
