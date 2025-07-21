@@ -1,7 +1,14 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm, Control } from "react-hook-form"
+import {
+  useFieldArray,
+  useForm,
+  Control,
+  UseFormReturn,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove
+} from "react-hook-form"
 import { X, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +28,80 @@ import { parseZipson } from "@/lib/utils"
 import { useEffect } from "react"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export function GameForm() {
+  const [game, setGame] = useQueryState("game", {
+    ...parseZipson,
+    history: "replace",
+    throttleMs: 5000
+  })
+
+  const form = useForm<GameSchema>({
+    resolver: zodResolver(gameSchema),
+    defaultValues: {
+      description: game?.description || `${formattedDateTime()} Game`,
+      players: game?.players || [
+        { name: "", cashIn: "", cashOut: "" },
+        { name: "", cashIn: "", cashOut: "" }
+      ]
+    }
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "players"
+  })
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      const parsedVal = gameSchema.safeParse(value)
+      setGame(parsedVal.success ? parsedVal.data : value)
+    })
+    return () => subscription.unsubscribe()
+  }, [form, setGame])
+
+  async function onSubmit(values: GameSchema) {
+    await sleep(500)
+    setGame(values)
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder="Game description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <PlayerFields
+          form={form}
+          fields={fields}
+          append={append}
+          remove={remove}
+        />
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting && (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          Submit
+        </Button>
+      </form>
+    </Form>
+  )
+}
+
 
 const PlayerField = ({
   control,
@@ -75,118 +156,65 @@ const NumericPlayerField = ({
   />
 )
 
-export function GameForm() {
-  const [game, setGame] = useQueryState("game", {
-    ...parseZipson,
-    history: "replace",
-    throttleMs: 5000
-  })
-
-  const form = useForm<GameSchema>({
-    resolver: zodResolver(gameSchema),
-    defaultValues: {
-      description: game?.description || `${formattedDateTime()} Game`,
-      players: game?.players || [
-        { name: "", cashIn: "", cashOut: "" },
-        { name: "", cashIn: "", cashOut: "" }
-      ]
-    }
-  })
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "players"
-  })
-
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      const parsedVal = gameSchema.safeParse(value)
-      setGame(parsedVal.success ? parsedVal.data : value)
-    })
-    return () => subscription.unsubscribe()
-  }, [form, setGame])
-
-  async function onSubmit(values: GameSchema) {
-    await sleep(500)
-    setGame(values)
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        <FormField
+const PlayerFields = ({
+  form,
+  fields,
+  append,
+  remove
+}: {
+  form: UseFormReturn<GameSchema>
+  fields: ReturnType<
+    typeof useFieldArray<GameSchema, "players", "id">
+  >["fields"]
+  append: UseFieldArrayAppend<GameSchema, "players">
+  remove: UseFieldArrayRemove
+}) => (
+  <div className="space-y-2">
+    <FormLabel className="grow">Players</FormLabel>
+    <FormDescription>
+      Prefix names with @ or $ to link to Venmo and Cashapp
+    </FormDescription>
+    {fields.map((field, index) => (
+      <div key={field.id} className="flex items-start space-x-2">
+        <PlayerField
           control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder="Game description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          name={`players.${index}.name`}
+          placeholder={`Player ${index + 1}`}
+          className="grow"
         />
-
-        <div className="space-y-2">
-          <FormLabel className="grow">Players</FormLabel>
-          <FormDescription>
-            Prefix names with @ or $ to link to Venmo and Cashapp
-          </FormDescription>
-          {fields.map((field, index) => (
-            <div key={field.id} className="flex items-start space-x-2">
-              <PlayerField
-                control={form.control}
-                name={`players.${index}.name`}
-                placeholder={`Player ${index + 1}`}
-                className="grow"
-              />
-              <NumericPlayerField
-                control={form.control}
-                name={`players.${index}.cashIn`}
-                placeholder="In"
-              />
-              <NumericPlayerField
-                control={form.control}
-                name={`players.${index}.cashOut`}
-                placeholder="Out"
-              />
-              <Button
-                type="button"
-                variant="destructive"
-                size="icon"
-                onClick={() => remove(index)}
-                disabled={fields.length <= 2}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          ))}
-          <div>
-            <FormMessage>
-              {form.formState.errors.players?.root?.message}
-            </FormMessage>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => append({} as PlayerSchema)}
-            className="w-full"
-          >
-            Add Player
-          </Button>
-        </div>
+        <NumericPlayerField
+          control={form.control}
+          name={`players.${index}.cashIn`}
+          placeholder="In"
+        />
+        <NumericPlayerField
+          control={form.control}
+          name={`players.${index}.cashOut`}
+          placeholder="Out"
+        />
         <Button
-          type="submit"
-          className="w-full"
-          disabled={form.formState.isSubmitting}
+          type="button"
+          variant="destructive"
+          size="icon"
+          onClick={() => remove(index)}
+          disabled={fields.length <= 2}
         >
-          {form.formState.isSubmitting && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          Submit
+          <X className="h-4 w-4" />
         </Button>
-      </form>
-    </Form>
-  )
-}
+      </div>
+    ))}
+    <div>
+      <FormMessage>
+        {form.formState.errors.players?.root?.message}
+      </FormMessage>
+    </div>
+    <Button
+      type="button"
+      variant="outline"
+      onClick={() => append({} as PlayerSchema)}
+      className="w-full"
+    >
+      Add Player
+    </Button>
+  </div>
+)
