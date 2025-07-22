@@ -21,11 +21,23 @@ import {
   FormMessage
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { gameSchema, GameSchema, PlayerSchema } from "@/lib/schemas"
+import {
+  gameSchema,
+  GameSchema,
+  PlayerSchema,
+  slippageType
+} from "@/lib/schemas"
 import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
 import { useEffect } from "react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -38,9 +50,10 @@ export function GameForm() {
 
   const form = useForm<GameSchema>({
     resolver: zodResolver(gameSchema),
-    defaultValues: {
-      description: game?.description || `${formattedDateTime()} Game`,
-      players: game?.players || [
+    defaultValues: game ?? {
+      description: `${formattedDateTime()} Game`,
+      slippageType: "proportional_winners",
+      players: [
         { name: "", cashIn: "", cashOut: "" },
         { name: "", cashIn: "", cashOut: "" }
       ]
@@ -68,19 +81,14 @@ export function GameForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Input placeholder="Game description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-2">
+          <div className="flex-grow">
+            <DescriptionField control={form.control} />
+          </div>
+          <div>
+            <SlippageTypeField control={form.control} />
+          </div>
+        </div>
         <PlayerFields
           form={form}
           fields={fields}
@@ -102,6 +110,48 @@ export function GameForm() {
   )
 }
 
+const DescriptionField = ({ control }: { control: Control<GameSchema> }) => (
+  <FormField
+    control={control}
+    name="description"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Description</FormLabel>
+        <FormControl>
+          <Input placeholder="Game description" {...field} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)
+
+const SlippageTypeField = ({ control }: { control: Control<GameSchema> }) => (
+  <FormField
+    control={control}
+    name="slippageType"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Slippage Distribution</FormLabel>
+        <Select onValueChange={field.onChange}>
+          <FormControl>
+            <SelectTrigger>
+              <SelectValue placeholder="Select how to distribute slippage" />
+            </SelectTrigger>
+          </FormControl>
+          <SelectContent>
+            {slippageType.map((type) => (
+              <SelectItem key={type} value={type}>
+                {type.replace(/_/g, " ")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)
 
 const PlayerField = ({
   control,
@@ -204,9 +254,7 @@ const PlayerFields = ({
       </div>
     ))}
     <div>
-      <FormMessage>
-        {form.formState.errors.players?.root?.message}
-      </FormMessage>
+      <FormMessage>{form.formState.errors.players?.root?.message}</FormMessage>
     </div>
     <Button
       type="button"

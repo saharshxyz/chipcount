@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@radix-ui/react-tabs": "^1.1.12",
     "@types/papaparse": "^5.3.16",
     "chroma-js": "^3.1.2",
     "class-variance-authority": "^0.7.1",
@@ -23,7 +22,7 @@
     "next-themes": "^0.4.6",
     "nuqs": "^2.4.3",
     "papaparse": "^5.5.3",
-    "radix-ui": "latest",
+    "radix-ui": "^1.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.0",

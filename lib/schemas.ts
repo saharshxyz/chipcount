@@ -42,6 +42,12 @@ const playerSchema = basicPlayerSchema.extend({
 })
 export type PlayerSchema = z.infer<typeof playerSchema>
 
+export const slippageType = [
+  "proportional_winners",
+  "even_winners",
+  "even_all"
+] as const
+
 export const gameSchema = z.object({
   description: z
     .string()
@@ -49,6 +55,7 @@ export const gameSchema = z.object({
     .trim()
     .default(`${formattedDateTime()} Game`)
     .optional(),
+  slippageType: z.enum(slippageType).default("proportional_winners").optional(),
   players: uniqueNameArraySchema(basicPlayerSchema)
 })
 export type GameSchema = z.infer<typeof gameSchema>
