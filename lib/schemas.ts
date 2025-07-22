@@ -29,8 +29,9 @@ const basicPlayerSchema = z.object({
 export type BasicPlayerSchema = z.infer<typeof basicPlayerSchema>
 
 const playerSchema = basicPlayerSchema.extend({
-  displayName: nameSchema,
+  displayName: nameSchema.optional(),
   net: z.number(),
+  slippage: dollarSchema,
   paidBy: z
     .array(paySchema)
     .describe(
@@ -45,7 +46,9 @@ export type PlayerSchema = z.infer<typeof playerSchema>
 export const slippageType = [
   "proportional_winners",
   "even_winners",
-  "even_all"
+  "even_all",
+  "even_losers",
+  "proportional_losers"
 ] as const
 
 export const gameSchema = z.object({

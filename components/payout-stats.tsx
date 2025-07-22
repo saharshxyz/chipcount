@@ -23,11 +23,18 @@ export function PayoutStats() {
     return payout
   }, [game])
 
-  if (!payout) return
+  const parsedGame = useMemo(() => {
+    const parseResult = gameSchema.safeParse(game)
+    return parseResult.success ? parseResult.data : null
+  }, [game])
+
+  if (!payout || !parsedGame) return
 
   return (
     <div className="space-y-5">
-      {Math.abs(payout.slippage) > 1e-9 && <SlippageInfo payout={payout} />}
+      {Math.abs(payout.slippage) > 1e-9 && (
+        <SlippageInfo payout={payout} slippageType={parsedGame.slippageType} />
+      )}
 
       <Card className="bg-secondary">
         <CardContent className="flex w-full flex-col justify-around gap-5 md:flex-row">

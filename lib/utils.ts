@@ -13,16 +13,43 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
     (sum, curr) => sum + curr.cashIn - curr.cashOut,
     0
   )
+  const playersWithNet = game.players.map((p) => ({
+    ...p,
+    net: p.cashOut - p.cashIn
+  }))
+  const winners = playersWithNet.filter((p) => p.net > 0)
+  const losers = playersWithNet.filter((p) => p.net < 0)
+  const totalWinnings = winners.reduce((sum, p) => sum + p.net, 0)
+  const totalLosses = losers.reduce((sum, p) => sum + Math.abs(p.net), 0)
 
-  const players = game.players
+  const getSlippage = (p: (typeof playersWithNet)[0]) =>
+    (
+      ({
+        even_all: () => slippage / game.players.length,
+        even_winners: () =>
+          p.net > 0 && winners.length ? slippage / winners.length : 0,
+        proportional_winners: () =>
+          p.net > 0 && totalWinnings ? (p.net / totalWinnings) * slippage : 0,
+        even_losers: () =>
+          p.net < 0 && losers.length ? slippage / losers.length : 0,
+        proportional_losers: () =>
+          p.net < 0 && totalLosses
+            ? (Math.abs(p.net) / totalLosses) * slippage
+            : 0
+      })[game.slippageType!] || (() => 0)
+    )()
+
+  const players = playersWithNet
     .map((p) => {
-      const net = p.cashOut - p.cashIn + slippage / game.players.length
+      const playerSlippage = getSlippage(p)
+      const finalNet = p.net + playerSlippage
       return {
         ...p,
-        net,
+        net: finalNet,
+        slippage: playerSlippage,
         paidBy: [] as PaySchema[],
         paidTo: [] as PaySchema[],
-        balance: net,
+        balance: finalNet,
         displayName:
           p.name[0] === "@" || p.name[0] === "$" ? p.name.substring(1) : p.name
       }
@@ -40,7 +67,6 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
     if (payment > 1e-9) {
       loser.balance += payment
       winner.balance -= payment
-
       loser.paidBy.push({ target: winner.name, value: payment })
       winner.paidTo.push({ target: loser.name, value: payment })
     }
@@ -51,10 +77,8 @@ export const calcPayouts = (game: GameSchema): PayoutSchema => {
 
   return {
     slippage,
-    players: players.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      ({ balance, ...p }) => p
-    )
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    players: players.map(({ balance, ...p }) => p)
   }
 }
 
@@ -78,6 +102,7 @@ export const convertPokerNow = (data: PokerNowSchema): GameSchema => {
 
   return {
     description: `${formattedDateTime(startTime)} Game`,
+    slippageType: "proportional_winners" as const,
     players: Array.from(playerTotals.entries()).map(([name, totals]) => ({
       name,
       cashIn: totals.in,

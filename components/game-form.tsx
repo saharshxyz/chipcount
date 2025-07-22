@@ -73,10 +73,7 @@ export function GameForm() {
     return () => subscription.unsubscribe()
   }, [form, setGame])
 
-  async function onSubmit(values: GameSchema) {
-    await sleep(500)
-    setGame(values)
-  }
+  const onSubmit = (values: GameSchema) => setGame(values)
 
   return (
     <Form {...form}>
