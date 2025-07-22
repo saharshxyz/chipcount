@@ -38,7 +38,7 @@ const Target = ({
       audience: "friends",
       recipients: target.substring(1),
       amount: val.toFixed(2),
-      note: `${formattedDateTime} Game`
+      note: `${formattedDateTime()} Game`
     }).forEach(([key, value]) => venmoUrl.searchParams.set(key, value))
     link = venmoUrl.toString()
   }
