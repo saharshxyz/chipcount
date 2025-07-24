@@ -102,7 +102,6 @@ export function GameForm() {
   )
 }
 
-
 const PlayerField = ({
   control,
   name,
@@ -204,9 +203,7 @@ const PlayerFields = ({
       </div>
     ))}
     <div>
-      <FormMessage>
-        {form.formState.errors.players?.root?.message}
-      </FormMessage>
+      <FormMessage>{form.formState.errors.players?.root?.message}</FormMessage>
     </div>
     <Button
       type="button"

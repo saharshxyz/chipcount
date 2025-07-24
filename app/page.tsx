@@ -1,5 +1,4 @@
-"use client"
-
+import type { Metadata } from "next"
 import {
   Card,
   CardAction,
@@ -14,32 +13,52 @@ import { Separator } from "@/components/ui/separator"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-import { Eraser, Import, Link as LinkIcon } from "lucide-react"
+import { Import } from "lucide-react"
 import Link from "next/link"
-import { toast } from "sonner"
+import { gameSchema } from "@/lib/schemas"
+import { parseZipson } from "@/lib/utils"
+import { FormActions } from "@/components/form-actions"
 
-export default function Home() {
-  const copyUrlToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href).then(
-      () => toast.success("Link copied to clipboard"),
-      () => toast.error("Failed to copy URL to clipboard.")
-    )
+export async function generateMetadata({
+  searchParams
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const params = await searchParams
+  const gameParam = params.game
+
+  const defaultMetadata = {
+    title: "ChipCount",
+    description: "Calculate Poker Payouts"
   }
 
+  if (typeof gameParam !== "string") return defaultMetadata
+
+  try {
+    const gameData = parseZipson.parse(gameParam)
+    const parseResult = gameSchema.safeParse(gameData)
+
+    if (!parseResult.success) return defaultMetadata
+
+    const { description } = parseResult.data
+    if (!description) return defaultMetadata
+
+    return {
+      title: `ChipCount | ${description}`,
+      description: `Calculate Poker Payouts`
+    }
+  } catch (error) {
+    console.warn("Failed to parse game data for metadata:", error)
+    return defaultMetadata
+  }
+}
+
+export default function Home() {
   return (
     <div>
       <div className="flex w-full flex-col items-center justify-center">
-        <div className="mb-2 flex flex-row justify-center space-x-2">
-          <a href="/" onClick={() => window.location.reload()}>
-            <Button variant="outline">
-              <Eraser className="mr-1" />
-              Clear Form
-            </Button>
-          </a>
-          <Button onClick={copyUrlToClipboard} className="max-w-full">
-            <LinkIcon className="mr-1" />
-            Copy Link
-          </Button>
+        <div className="mb-2">
+          <FormActions />
         </div>
         <Card className="w-full max-w-prose">
           <CardHeader>
