@@ -52,7 +52,7 @@
   height: 100%,
   stroke: (
     paint: theme.card-background,
-    thickness: 3.5em,
+    thickness: 2.75em,
     join: "round",
   ),
   radius: 5em,
