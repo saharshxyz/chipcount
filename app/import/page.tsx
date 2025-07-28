@@ -68,7 +68,6 @@ const importSchema = z
       message: "Invalid input for selected type"
     }
   )
-
 type ImportSchema = z.infer<typeof importSchema>
 
 const processParsedData = (result: ParseResult<unknown>) => {
@@ -122,7 +121,7 @@ function ImportPageContent() {
     return data.csvData
   }
 
-  const parseCsvData = (csvData: string) => {
+  const parseCsvData = (csvData: string, url: string | undefined) => {
     return new Promise<GameSchema>((resolve, reject) => {
       Papa.parse(csvData, {
         header: true,
@@ -130,6 +129,7 @@ function ImportPageContent() {
         complete: (result) => {
           try {
             const convertedGame = processParsedData(result)
+            if (url != undefined) convertedGame.description = url
             resolve(convertedGame)
           } catch (error) {
             reject(error)
@@ -154,7 +154,7 @@ function ImportPageContent() {
         csvData = values.csvData!
       }
 
-      const convertedGame = await parseCsvData(csvData)
+      const convertedGame = await parseCsvData(csvData, values.url)
       navigateToGame(convertedGame)
     } catch (error) {
       const fieldName = values.type === "url" ? "url" : "csvData"
