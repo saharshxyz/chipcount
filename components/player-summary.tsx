@@ -42,9 +42,7 @@ const Target = ({
     }).forEach(([key, value]) => venmoUrl.searchParams.set(key, value))
     link = venmoUrl.toString()
   }
-  if (target[0] === "$") {
-    link = `https://cash.app/$${target.substring(1)}`
-  }
+  if (target[0] === "$") link = `https://cash.app/$${target.substring(1)}`
 
   return link ? (
     <a

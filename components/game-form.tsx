@@ -27,8 +27,6 @@ import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
 import { useEffect } from "react"
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
 export function GameForm() {
   const [game, setGame] = useQueryState("game", {
     ...parseZipson,
@@ -61,7 +59,6 @@ export function GameForm() {
   }, [form, setGame])
 
   async function onSubmit(values: GameSchema) {
-    await sleep(500)
     setGame(values)
   }
 
@@ -171,7 +168,7 @@ const PlayerFields = ({
   <div className="space-y-2">
     <FormLabel className="grow">Players</FormLabel>
     <FormDescription>
-      Prefix names with @ or $ to link to Venmo and Cashapp
+      Prefix names with @ or $ to link to Venmo or Cashapp
     </FormDescription>
     {fields.map((field, index) => (
       <div key={field.id} className="flex items-start space-x-2">
