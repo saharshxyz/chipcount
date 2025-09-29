@@ -35,7 +35,7 @@ const Target = ({
     const venmoUrl = new URL("https://venmo.com/")
     Object.entries({
       txn: isSending ? "pay" : "charge",
-      audience: "friends",
+      audience: "private",
       recipients: target.substring(1),
       amount: val.toFixed(2),
       note: `${formattedDateTime()} Game`
