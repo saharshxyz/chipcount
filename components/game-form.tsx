@@ -25,7 +25,7 @@ import { gameSchema, GameSchema, PlayerSchema } from "@/lib/schemas"
 import { formattedDateTime } from "@/lib/utils"
 import { useQueryState } from "nuqs"
 import { parseZipson } from "@/lib/utils"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 export function GameForm() {
   const [game, setGame] = useQueryState("game", {
@@ -34,15 +34,17 @@ export function GameForm() {
     throttleMs: 5000
   })
 
+  const getDefaultValues = () => ({
+    description: game?.description || `${formattedDateTime()} Game`,
+    players: game?.players || [
+      { name: "", cashIn: "", cashOut: "" },
+      { name: "", cashIn: "", cashOut: "" }
+    ]
+  })
+
   const form = useForm<GameSchema>({
     resolver: zodResolver(gameSchema),
-    defaultValues: {
-      description: game?.description || `${formattedDateTime()} Game`,
-      players: game?.players || [
-        { name: "", cashIn: "", cashOut: "" },
-        { name: "", cashIn: "", cashOut: "" }
-      ]
-    }
+    defaultValues: getDefaultValues()
   })
 
   const { fields, append, remove } = useFieldArray({
@@ -50,10 +52,25 @@ export function GameForm() {
     name: "players"
   })
 
+  // Track if form changes are from user input vs external URL changes
+  const isUserInput = useRef(false)
+
+  // Sync form with external game changes (e.g., from import navigation)
+  useEffect(() => {
+    if (!isUserInput.current && game) {
+      const parseResult = gameSchema.safeParse(game)
+      if (parseResult.success) {
+        form.reset(parseResult.data)
+      }
+    }
+    isUserInput.current = false
+  }, [game, form])
+
   useEffect(() => {
     const subscription = form.watch((value) => {
+      isUserInput.current = true
       const parsedVal = gameSchema.safeParse(value)
-      setGame(parsedVal.success ? parsedVal.data : value)
+      setGame(parsedVal.success ? parsedVal.data : null)
     })
     return () => subscription.unsubscribe()
   }, [form, setGame])

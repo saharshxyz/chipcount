@@ -8,7 +8,7 @@ import {
   ChartTooltipContent
 } from "@/components/ui/chart"
 import { Label, LabelList, Pie, PieChart } from "recharts"
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { formatDollar } from "@/lib/utils"
 import chroma from "chroma-js"
 
@@ -17,30 +17,32 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   const smallestNet = players[players.length - 1].net
   const largestNet = players[0].net
 
-  const genColors = (lowerBound: number, upperBound: number) => {
-    const rootStyles = window.getComputedStyle(document.documentElement) // Will error on first load, but will refresh and work
-    const success = rootStyles.getPropertyValue("--color-success").trim()
-    const destructive = rootStyles
-      .getPropertyValue("--color-destructive")
-      .trim()
-    const muted = rootStyles.getPropertyValue("--muted-foreground").trim()
+  const [colors, setColors] = useState<string[]>([])
 
-    return chroma
-      .scale([success, muted, destructive])
-      .mode("lrgb")
-      .domain([lowerBound, 0, upperBound])
-      .colors(upperBound + Math.abs(lowerBound) + 1)
-      .toReversed()
-  }
+  useEffect(() => {
+    const genColors = (lowerBound: number, upperBound: number) => {
+      const rootStyles = window.getComputedStyle(document.documentElement)
+      const success = rootStyles.getPropertyValue("--color-success").trim() || "#22c55e"
+      const destructive = rootStyles.getPropertyValue("--color-destructive").trim() || "#ef4444"
+      const muted = rootStyles.getPropertyValue("--muted-foreground").trim() || "#71717a"
 
-  const colors = genColors(smallestNet, largestNet)
+      return chroma
+        .scale([success, muted, destructive])
+        .mode("lrgb")
+        .domain([lowerBound, 0, upperBound])
+        .colors(upperBound + Math.abs(lowerBound) + 1)
+        .toReversed()
+    }
 
-  const playersData = players.map((player) => ({
+    setColors(genColors(smallestNet, largestNet))
+  }, [smallestNet, largestNet])
+
+  const playersData = useMemo(() => players.map((player) => ({
     name: player.displayName,
     cashIn: player.cashIn,
     cashOut: player.cashOut,
-    fill: colors[Math.floor(player.net + Math.abs(smallestNet))]
-  }))
+    fill: colors[Math.floor(player.net + Math.abs(smallestNet))] || "#71717a"
+  })), [players, colors, smallestNet])
 
   const chartConfig = Object.fromEntries(
     playersData.map((player) => [player.name, { label: player.name }])
@@ -49,6 +51,10 @@ export function DonutCharts({ payout }: { payout: PayoutSchema }) {
   const totalPot = useMemo(() => {
     return playersData.reduce((acc, curr) => acc + curr.cashOut, 0)
   }, [playersData])
+
+  if (colors.length === 0) {
+    return <div className="m-auto mx-auto aspect-6/5 h-[250px]" />
+  }
 
   return (
     <ChartContainer

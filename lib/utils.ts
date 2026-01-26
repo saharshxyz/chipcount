@@ -128,7 +128,12 @@ export const parseZipson = {
       )
     }
 
-    return parse(decodeFromBinary(queryValue))
+    try {
+      if (!queryValue) return null
+      return parse(decodeFromBinary(queryValue))
+    } catch {
+      return null
+    }
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   serialize: (value: any) => {
