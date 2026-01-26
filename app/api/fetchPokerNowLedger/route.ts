@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 
+const POKERNOW_URL_PATTERN = /^https:\/\/www\.pokernow\.club\/games\/[a-zA-Z0-9_-]+\/ledger_[a-zA-Z0-9_-]+\.csv$/
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const url = searchParams.get("url")
@@ -7,6 +9,13 @@ export async function GET(request: Request) {
   if (!url) {
     return NextResponse.json(
       { error: "PokerNow URL is required." },
+      { status: 400 }
+    )
+  }
+
+  if (!POKERNOW_URL_PATTERN.test(url)) {
+    return NextResponse.json(
+      { error: "Invalid PokerNow ledger URL format." },
       { status: 400 }
     )
   }

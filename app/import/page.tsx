@@ -34,7 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { GameSchema, pokerNowSchema } from "@/lib/schemas"
 import { convertPokerNow, parseZipson } from "@/lib/utils"
 
-const pokerNowUrlRegex = /^https:\/\/www\.pokernow\.club\/games\/([^/]+)$/
+const pokerNowUrlRegex = /^https:\/\/www\.pokernow\.club\/games\/([a-zA-Z0-9_-]+)\/?(?:\?.*)?$/
 
 const importSchema = z
   .object({
