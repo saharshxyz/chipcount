@@ -45,7 +45,7 @@ export type PlayerSchema = z.infer<typeof playerSchema>
 export const gameSchema = z.object({
   description: z
     .string()
-    .max(60)
+    .max(100)
     .trim()
     .default(`${formattedDateTime()} Game`)
     .optional(),
